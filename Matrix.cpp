@@ -28,8 +28,8 @@ Matrix::Matrix(int h, int w, bool graphic) {
     /// Create black empty images
     this->screen = cv::Mat::zeros(w, h, CV_8UC3);
     cv::imshow("test", this->screen);
-    cv::moveWindow("test", 10, 0);
-    cv::waitKey(0);
+    cv::moveWindow("test", 0, 20);
+    cv::waitKey(1);
   }
 }
 
@@ -78,7 +78,7 @@ void Matrix::printG() {
   // this->screen.at<cv::Vec3b>(cv::Point(10,10)) = cv::Vec3b(255,255,255);
   /// 3. Display your stuff!
   cv::imshow("test", this->screen);
-  cv::waitKey(30);
+  cv::waitKey(1);
 }
 
 short Matrix::get(int i, int j) {
@@ -92,10 +92,12 @@ void Matrix::set(int i, int j, short v) {
 }
 
 void Matrix::forEach(std::function<short(int, int, short, int)>f) {
-  forEach(0, this->h,f);
+  forEach(0, this->h, f);
 }
 
-void Matrix::forEach(int start, int end, std::function<short(int, int, short, int)>f) {
+void Matrix::forEach(int start,
+                     int end,
+                     std::function<short(int, int, short, int)>f) {
   for (int i = start; i < end; i++) {
     for (int j = 0; j < this->w; j++) {
       int alive = countAlive(i, j);
