@@ -4,7 +4,7 @@
 #include <opencv2/highgui.hpp>
 
 class Matrix {
-  short **m;
+  short **read, **write;
   int     w, h;
   cv::Mat screen;
 
@@ -12,14 +12,22 @@ public:
 
   Matrix(int h,
          int w);
+  Matrix(int  h,
+         int  w,
+         bool graphic);
+  ~Matrix();
   void  print();
-  void printG();
+  void  printG();
   short get(int i,
             int j);
   void  set(int   i,
             int   j,
             short v);
-  void  forEach(std::function<void(int, int, short *, int, int)>f);
+  void  swap();
+  void  forEach(std::function<short(int, int, short, int)>f);
+  void  forEach(int start,
+                int end,
+                std::function<short(int, int, short, int)>f);
 
 private:
 

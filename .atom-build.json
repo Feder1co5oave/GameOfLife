@@ -1,6 +1,18 @@
 {
   "cmd": "g++",
   "name": "buildc++",
-  "args": [ "-std=c++11", "-g", "`pkg-config --cflags --libs opencv`", "main.cpp", "Matrix.cpp"],
-  "sh": true
+  "args": ["-std=c++11", "-g", "`pkg-config --cflags --libs opencv`",
+    "-o", "s.out", "sequential.cpp", "Matrix.cpp"
+  ],
+  "sh": true,
+  "targets": {
+    "threaded": {
+      "cmd": "g++",
+      "name": "buildc++",
+      "args": ["-std=c++11", "-g", "`pkg-config --cflags --libs opencv`",
+        "-o", "t.out","-pthread", "thread.cpp", "Matrix.cpp"
+      ],
+      "sh": true
+    }
+  }
 }
