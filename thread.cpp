@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
 
   //Matrix *m = existArgument(argc, argv,"--graphic") ? new MatrixG(h, w): new Matrix(h,w);
 
-  Matrix *m = new Matrix(h,w);
+  Matrix m = Matrix(h,w);
 
   int nRow = (h / nw);
   for (int k = 0; k < s; k++) {
@@ -72,14 +72,13 @@ int main(int argc, char *argv[]) {
           }
           return v;
         });
-      }, m, start, end));
+      }, &m, start, end));
     }
 
     for (int i = 0; i < nw; i++) tid[i].join();
 
-    m->swap();
-    m->print();
+    m.swap();
+    m.print();
   }
-  delete m;
   return 0;
 }

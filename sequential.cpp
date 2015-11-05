@@ -9,9 +9,9 @@ int main(int argc, char *argv[]) {
   // int nw = std::atoi(argv[1]);
   int h     = 1000;
   int w     = 800;
-  Matrix *m = new Matrix(h, w, true);
+  Matrix *m = new Matrix(h, w);
 
-  m->printG();
+  m->print();
 
   for (int i = 0; i < 200; i++) {
     m->forEach([&](int i, int j, short v, int alive) -> short {
@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
       return v;
     });
     m->swap();
-    m->printG();
+    m->print();
   }
   delete m;
   return 0;
