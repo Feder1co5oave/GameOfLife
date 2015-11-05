@@ -1,14 +1,9 @@
 #include <iostream>
 #include <functional>
 #include <cmath>
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/highgui.hpp>
 #include "Matrix.hpp"
 
-Matrix::Matrix(int h, int w) : Matrix(h, w, false) {}
-
-Matrix::Matrix(int h, int w, bool graphic) {
+Matrix::Matrix(int h, int w) {
   srand(time(NULL));
   this->h     = h;
   this->w     = w;
@@ -23,14 +18,6 @@ Matrix::Matrix(int h, int w, bool graphic) {
       this->read[i][j] = floor(rand() % 2);
     }
   }
-
-  if (graphic) {
-    /// Create black empty images
-    this->screen = cv::Mat::zeros(w, h, CV_8UC3);
-    cv::imshow("test", this->screen);
-    cv::moveWindow("test", 0, 20);
-    cv::waitKey(1);
-  }
 }
 
 Matrix::~Matrix() {
@@ -43,7 +30,7 @@ Matrix::~Matrix() {
 }
 
 void Matrix::print() {
-  std::cout << "\n";
+  //std::cout << "\n";
   int h = this->h;
   int w = this->w;
 
@@ -51,34 +38,9 @@ void Matrix::print() {
     for (int j = 0; j < w; j++) {
       std::cout << this->read[i][j] << " ";
     }
-    std::cout << "\n";
+    std::cout << std::endl;
   }
-}
-
-void Matrix::printG() {
-  // Print::matrix((short**)&m[0][0],h,w);
-  // std::cout << "\n";
-  int h = this->h;
-  int w = this->w;
-
-  for (int i = 0; i < h; i++) {
-    for (int j = 0; j < w; j++) {
-      // std::cout << this->m[i][j] << " ";
-      if (this->read[i][j] == 1) {
-        this->screen.at<cv::Vec3b>(cv::Point(i, j)) = cv::Vec3b(255, 255, 255);
-      } else {
-        this->screen.at<cv::Vec3b>(cv::Point(i, j)) = cv::Vec3b(0, 0, 0);
-      }
-    }
-
-    // std::cout << "\n";
-  }
-
-
-  // this->screen.at<cv::Vec3b>(cv::Point(10,10)) = cv::Vec3b(255,255,255);
-  /// 3. Display your stuff!
-  cv::imshow("test", this->screen);
-  cv::waitKey(1);
+  std::cout << std::endl;
 }
 
 short Matrix::get(int i, int j) {
