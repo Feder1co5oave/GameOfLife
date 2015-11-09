@@ -21,6 +21,19 @@ bool existArgument(int argc, char **argv, const std::string& option) {
   return std::find(argv, end, option) != end;
 }
 
+void body (Matrix *m, int start, int end) {
+  m->forEach(start, end, [&](int i, int j, short v, int alive) -> short {
+    if (v == 1) {
+      if (alive < 2) return 0;
+
+      if (alive > 3) return 0;
+    } else if (v == 0) {
+      if (alive == 3) return 1;
+    }
+    return v;
+  });
+}
+
 int main(int argc, char *argv[]) {
   if (existArgument(argc, argv, "--help") ||
       existArgument(argc, argv, "-h")) {
@@ -47,8 +60,11 @@ int main(int argc, char *argv[]) {
   char *sStr = getArgument(argc, argv, "--step");
   int   s    = sStr ? std::atoi(sStr) : 100;
 
-  Matrix m =
-      existArgument(argc, argv, "--graphic") ? MatrixG(h, w) : Matrix(h, w);
+  Matrix *m = nullptr;
+  if (existArgument(argc, argv, "--graphic"))
+     m = new MatrixG(h, w);
+  else
+    m = new Matrix(h, w);
 
   // MatrixG m = MatrixG(h,w);
 
@@ -64,28 +80,20 @@ int main(int argc, char *argv[]) {
       std::cout << "thread" << i << " start: " << start << " end:" << end <<
         std::endl;
 
-      tid.push_back(std::thread([&](Matrix *m, int start, int end) -> void {
-        m->forEach(start, end, [&](int i, int j, short v, int alive) -> short {
-          if (v == 1) {
-            if (alive < 2) return 0;
+      tid.push_back(std::thread(body, m, start, end));
 
-            if (alive > 3) return 0;
-          } else if (v == 0) {
-            if (alive == 3) return 1;
-          }
-          return v;
-        });
-      }, &m, start, end));
     }
     std::cout << "before join" << std::endl;
 
     for (int i = 0; i < nw; i++) tid[i].join();
 
     std::cout << "before swap" << std::endl;
-    m.swap();
+    m->swap();
 
     std::cout << "before print" << std::endl;
-    m.print();
+    m->print();
+
   }
+  delete m;
   return 0;
 }

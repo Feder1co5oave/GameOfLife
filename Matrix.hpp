@@ -4,11 +4,14 @@
 #include <functional>
 
 class Matrix {
+  Matrix(Matrix const&) =delete;
+  Matrix& operator=(Matrix const&) =delete;
+
 public:
 
   Matrix(int h,
          int w);
-  ~Matrix();
+  virtual ~Matrix();
   virtual void print();
   short        get(int i,
                    int j);
@@ -27,7 +30,6 @@ protected:
   int     w, h;
 
 private:
-
   short mod(int x,
             int y);
   int   countAlive(int x,

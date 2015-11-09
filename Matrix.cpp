@@ -18,6 +18,7 @@ Matrix::Matrix(int h, int w) {
       this->read[i][j] = floor(rand() % 2);
     }
   }
+  std::cout << "mi sono costruito" << std::endl;
 }
 
 Matrix::~Matrix() {
@@ -29,7 +30,7 @@ Matrix::~Matrix() {
   delete[] this->write;
 }
 
-void Matrix::print() {
+void Matrix::print(){
   // std::cout << "\n";
   int h = this->h;
   int w = this->w;
@@ -44,7 +45,9 @@ void Matrix::print() {
 }
 
 short Matrix::get(int i, int j) {
-  return this->read[mod(i, h)][mod(j, w)];
+  i = mod(i,h);
+  j = mod(j,w);
+  return this->read[i][j];
 }
 
 void Matrix::set(int i, int j, short v) {

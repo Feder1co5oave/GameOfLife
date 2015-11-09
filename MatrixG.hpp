@@ -8,11 +8,13 @@
 #include "Matrix.hpp"
 
 class MatrixG : public Matrix {
+  MatrixG(MatrixG const&) =delete;
+  MatrixG& operator=(MatrixG const&) =delete;
+
 public:
 
   MatrixG(int h,
           int w);
-  ~MatrixG();
   void  print() override;
 
 private:

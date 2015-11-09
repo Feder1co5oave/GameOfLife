@@ -6,7 +6,7 @@
 #include <opencv2/highgui.hpp>
 #include "MatrixG.hpp"
 
-MatrixG::MatrixG(int h, int w) : Matrix{h, w} {
+MatrixG::MatrixG(int h, int w) : Matrix(h, w) {
   /// Create black empty images
   this->screen = cv::Mat::zeros(w, h, CV_8UC3);
   cv::imshow("test", this->screen);
@@ -14,9 +14,7 @@ MatrixG::MatrixG(int h, int w) : Matrix{h, w} {
   cv::waitKey(1);
 }
 
-MatrixG::~MatrixG() {}
-
-void MatrixG::print() {
+void MatrixG::print(){
   int h = this->h;
   int w = this->w;
 
