@@ -6,6 +6,7 @@ main.out: main.cpp build/Matrix.o build/MatrixG.o
 			-pthread \
 			`pkg-config --cflags --libs opencv` \
 			-g \
+			-O3 \
 			-o main.out
 
 build/MatrixG.o: MatrixG.cpp
@@ -14,6 +15,7 @@ build/MatrixG.o: MatrixG.cpp
 			-c \
 			-std=c++11 \
 			`pkg-config --cflags --libs opencv` \
+			-O3 \
 			-o build/MatrixG.o
 
 build/Matrix.o: Matrix.cpp
@@ -21,6 +23,7 @@ build/Matrix.o: Matrix.cpp
 				-g \
 				-c \
 				-std=c++11 \
+				-O3 \
 				-o build/Matrix.o
 
 build:

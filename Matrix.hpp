@@ -12,10 +12,10 @@ public:
   Matrix(int h,
          int w);
   virtual ~Matrix();
-  virtual void print();
+  virtual void print() const;
   short        get(int i,
-                   int j);
-  void         set(int   i,
+                   int j) const;
+  virtual void         set(int   i,
                    int   j,
                    short v);
   void         swap();
@@ -31,9 +31,9 @@ protected:
 
 private:
   short mod(int x,
-            int y);
+            int y) const;
   int   countAlive(int x,
-                   int y);
+                   int y) const;
 };
 
 #endif // ifndef Matrix_h_

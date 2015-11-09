@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
   char *sStr = getArgument(argc, argv, "--step");
   int   s    = sStr ? std::atoi(sStr) : 100;
 
-  Matrix *m = nullptr;
+  Matrix *m;
   if (existArgument(argc, argv, "--graphic"))
      m = new MatrixG(h, w);
   else

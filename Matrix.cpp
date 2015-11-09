@@ -18,7 +18,6 @@ Matrix::Matrix(int h, int w) {
       this->read[i][j] = floor(rand() % 2);
     }
   }
-  std::cout << "mi sono costruito" << std::endl;
 }
 
 Matrix::~Matrix() {
@@ -30,7 +29,7 @@ Matrix::~Matrix() {
   delete[] this->write;
 }
 
-void Matrix::print(){
+void Matrix::print() const{
   // std::cout << "\n";
   int h = this->h;
   int w = this->w;
@@ -44,7 +43,7 @@ void Matrix::print(){
   std::cout << std::endl;
 }
 
-short Matrix::get(int i, int j) {
+short Matrix::get(int i, int j) const{
   i = mod(i,h);
   j = mod(j,w);
   return this->read[i][j];
@@ -63,7 +62,7 @@ void Matrix::forEach(int start,
                      std::function<short(int, int, short, int)>f) {
   for (int i = start; i < end; i++) {
     for (int j = 0; j < this->w; j++) {
-      this->write[i][j] = f(i, j, this->read[i][j], countAlive(i, j));
+      set(i,j,f(i, j, this->read[i][j], countAlive(i, j)));
     }
   }
 }
@@ -75,7 +74,7 @@ void Matrix::swap() {
   this->write = tmp;
 }
 
-int Matrix::countAlive(int x, int y) {
+int Matrix::countAlive(int x, int y) const{
   int count = 0;
 
   for (int i = x - 1; i <= x + 1; i++) {
@@ -88,6 +87,6 @@ int Matrix::countAlive(int x, int y) {
   return count;
 }
 
-short Matrix::mod(int a, int b) {
+short Matrix::mod(int a, int b) const{
   return (a % b + b) % b;
 }

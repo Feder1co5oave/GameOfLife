@@ -15,7 +15,10 @@ public:
 
   MatrixG(int h,
           int w);
-  void  print() override;
+  void  print() const override;
+  void set (int   i,
+                   int   j,
+                   short v) override;
 
 private:
   cv::Mat screen;
