@@ -30,7 +30,7 @@ Matrix::~Matrix() {
 }
 
 void Matrix::print() {
-  //std::cout << "\n";
+  // std::cout << "\n";
   int h = this->h;
   int w = this->w;
 
@@ -48,9 +48,7 @@ short Matrix::get(int i, int j) {
 }
 
 void Matrix::set(int i, int j, short v) {
-  i                 = mod(i, this->h);
-  j                 = mod(j, this->w);
-  this->write[i][j] = v;
+  this->write[mod(i, this->h)][mod(j, this->w)] = v;
 }
 
 void Matrix::forEach(std::function<short(int, int, short, int)>f) {
@@ -62,8 +60,7 @@ void Matrix::forEach(int start,
                      std::function<short(int, int, short, int)>f) {
   for (int i = start; i < end; i++) {
     for (int j = 0; j < this->w; j++) {
-      int alive = countAlive(i, j);
-      this->write[i][j] = f(i, j, this->read[i][j], alive);
+      this->write[i][j] = f(i, j, this->read[i][j], countAlive(i, j));
     }
   }
 }

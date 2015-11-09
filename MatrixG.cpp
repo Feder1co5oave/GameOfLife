@@ -4,9 +4,9 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
-#include "Matrix.hpp"
+#include "MatrixG.hpp"
 
-MatrixG::MatrixG(int h, int w) : Matrix(int h, int w){
+MatrixG::MatrixG(int h, int w) : Matrix{h, w} {
   /// Create black empty images
   this->screen = cv::Mat::zeros(w, h, CV_8UC3);
   cv::imshow("test", this->screen);
@@ -14,17 +14,9 @@ MatrixG::MatrixG(int h, int w) : Matrix(int h, int w){
   cv::waitKey(1);
 }
 
-MatrixG::~MatrixG() : ~Matrix(){
-  for (int i = 0; i < this->h; i++) {
-    delete[] this->read[i];
-    delete[] this->write[i];
-  }
-  delete[] this->read;
-  delete[] this->write;
-  delete this->screen;
-}
+MatrixG::~MatrixG() {}
 
-void MatrixG::print() override {
+void MatrixG::print() {
   int h = this->h;
   int w = this->w;
 
@@ -36,7 +28,7 @@ void MatrixG::print() override {
         this->screen.at<cv::Vec3b>(cv::Point(i, j)) = cv::Vec3b(0, 0, 0);
       }
     }
-}
+  }
   cv::imshow("test", this->screen);
   cv::waitKey(1);
 }
