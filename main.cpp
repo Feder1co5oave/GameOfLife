@@ -43,10 +43,10 @@ void bodySequential (Matrix *m) {
 int main(int argc, char *argv[]) {
   if (existArgument(argc, argv, "--help") ||
       existArgument(argc, argv, "-h")) {
-    std::cout << "--thread <number> \t number of threads" << std::endl;
+    std::cout << "--thread <number> \t number of threads, if 0 run the sequential version" << std::endl;
     std::cout << "--height <number> \t height of the matrix" << std::endl;
     std::cout << "--width <number> \t width of the matrix" << std::endl;
-    std::cout << "--step <number> \t number of step" << std::endl;
+    std::cout << "--step <number> \t number of step, if 0 run forever" << std::endl;
     std::cout << "--graphic \t\t activate the graphic mode" << std::endl;
     std::cout << "--help or -h \t\t this help" << std::endl;
     return 0;
