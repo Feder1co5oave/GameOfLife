@@ -28,3 +28,6 @@ build/Matrix.o: Matrix.cpp
 
 build:
 	mkdir -p build
+
+clean:
+		rm -Rvf build main.out
