@@ -1,0 +1,20 @@
+all_build: build main.mic.out
+
+main.mic.out: main.cpp build/Matrix.o
+	g++ main.cpp build/Matrix.o \
+			-std=c++11 \
+			-pthread \
+			-g \
+			-O3 \
+			-o main.mic.out
+
+build/Matrix.o: Matrix.cpp
+		g++ Matrix.cpp \
+				-g \
+				-c \
+				-std=c++11 \
+				-O3 \
+				-o build/Matrix.o
+
+build:
+	mkdir -p build

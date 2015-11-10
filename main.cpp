@@ -5,7 +5,9 @@
 #include <thread>
 #include <vector>
 #include "Matrix.hpp"
-#include "MatrixG.hpp"
+#if OPENCV
+  # include "MatrixG.hpp"
+#endif // if OPENCV
 
 char* getArgument(int argc, char **argv, const std::string& option) {
   char **end  = argv + argc;
@@ -21,7 +23,7 @@ bool existArgument(int argc, char **argv, const std::string& option) {
   return std::find(argv, end, option) != end;
 }
 
-short lifeLogic (int i, int j, short v, int alive){
+short lifeLogic(int i, int j, short v, int alive) {
   if (v == 1) {
     if (alive < 2) return 0;
 
@@ -32,22 +34,27 @@ short lifeLogic (int i, int j, short v, int alive){
   return v;
 }
 
-void bodyThread (Matrix *m, int start, int end) {
-  m->forEach(start,end,lifeLogic);
+void bodyThread(Matrix *m, int start, int end) {
+  m->forEach(start, end, lifeLogic);
 }
 
-void bodySequential (Matrix *m) {
+void bodySequential(Matrix *m) {
   m->forEach(lifeLogic);
 }
 
 int main(int argc, char *argv[]) {
   if (existArgument(argc, argv, "--help") ||
       existArgument(argc, argv, "-h")) {
-    std::cout << "--thread <number> \t number of threads, if 0 run the sequential version" << std::endl;
+    std::cout <<
+      "--thread <number> \t number of threads, if 0 run the sequential version" <<
+      std::endl;
     std::cout << "--height <number> \t height of the matrix" << std::endl;
     std::cout << "--width <number> \t width of the matrix" << std::endl;
-    std::cout << "--step <number> \t number of step, if 0 run forever" << std::endl;
+    std::cout << "--step <number> \t number of step, if 0 run forever" <<
+      std::endl;
+    #if OPENCV
     std::cout << "--graphic \t\t activate the graphic mode" << std::endl;
+    #endif
     std::cout << "--help or -h \t\t this help" << std::endl;
     return 0;
   }
@@ -65,14 +72,18 @@ int main(int argc, char *argv[]) {
   int   s    = sStr ? std::atoi(sStr) : 100;
 
   Matrix *m;
-  if (existArgument(argc, argv, "--graphic"))
-     m = new MatrixG(h, w);
-  else
-     m = new Matrix(h, w);
+  #if OPENCV
+  m = (existArgument(argc, argv, "--graphic")) ?
+      new MatrixG(h, w) :
+      new Matrix(h, w);
+  #else // if OPENCV
+  m = new Matrix(h, w);
+  #endif // if OPENCV
 
-  for (int k = 0; k < s || s==0; k++) {
+  for (int k = 0; k < s || s == 0; k++) {
     std::cout << "step " << k << std::endl;
-    if (nw!=0){
+
+    if (nw != 0) {
       int nRow = (h / nw);
       std::vector<std::thread> tid;
 
@@ -87,13 +98,12 @@ int main(int argc, char *argv[]) {
       }
 
       for (int i = 0; i < nw; i++) tid[i].join();
-    }else{
+    } else {
       bodySequential(m);
     }
 
     m->swap();
     m->print();
-
   }
   delete m;
   return 0;
