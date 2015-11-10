@@ -7,7 +7,6 @@ main.out: main.cpp build/Matrix.o build/MatrixG.o
 			`pkg-config --cflags --libs opencv` \
 			-g \
 			-O3 \
-			-D OPENCV \
 			-o main.out
 
 build/MatrixG.o: MatrixG.cpp

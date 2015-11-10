@@ -5,9 +5,9 @@
 #include <thread>
 #include <vector>
 #include "Matrix.hpp"
-#if OPENCV
+#if !NO_OPENCV
   # include "MatrixG.hpp"
-#endif // if OPENCV
+#endif // if NO_OPENCV
 
 char* getArgument(int argc, char **argv, const std::string& option) {
   char **end  = argv + argc;
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
     std::cout << "--width <number> \t width of the matrix" << std::endl;
     std::cout << "--step <number> \t number of step, if 0 run forever" <<
       std::endl;
-    #if OPENCV
+    #if !NO_OPENCV
     std::cout << "--graphic \t\t activate the graphic mode" << std::endl;
     #endif
     std::cout << "--help or -h \t\t this help" << std::endl;
@@ -72,13 +72,13 @@ int main(int argc, char *argv[]) {
   int   s    = sStr ? std::atoi(sStr) : 100;
 
   Matrix *m;
-  #if OPENCV
+  #if !NO_OPENCV
   m = (existArgument(argc, argv, "--graphic")) ?
       new MatrixG(h, w) :
       new Matrix(h, w);
-  #else // if OPENCV
+  #else // if NO_OPENCV
   m = new Matrix(h, w);
-  #endif // if OPENCV
+  #endif // if NO_OPENCV
 
   for (int k = 0; k < s || s == 0; k++) {
     std::cout << "step " << k << std::endl;
