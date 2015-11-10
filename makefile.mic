@@ -2,8 +2,8 @@ all_build: build main.mic.out
 
 main.mic.out: main.cpp build/Matrix.o
 	icpc main.cpp build/Matrix.o \
-			-std=c++11\
-			-DNO_OPENCV
+			-std=c++11 \
+			-DNO_OPENCV \
 			-pthread \
 			-O3 \
 			-o main.mic.out
