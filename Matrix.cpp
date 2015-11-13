@@ -4,7 +4,7 @@
 #include "Matrix.hpp"
 
 Matrix::Matrix(int h, int w) {
-  srand(time(NULL));
+  srand(time(0));
   this->h     = h;
   this->w     = w;
   this->read  = new short *[h];
