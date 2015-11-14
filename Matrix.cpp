@@ -36,7 +36,7 @@ void Matrix::print() const{
 
   for (int i = 0; i < h; i++) {
     for (int j = 0; j < w; j++) {
-      std::cout << this->read[i][j] << " ";
+      std::cout << (this->read[i][j] ? "\u2588\u2588" : "  ");
     }
     std::cout << std::endl;
   }
