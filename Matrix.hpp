@@ -13,16 +13,17 @@ public:
          int w);
   virtual ~Matrix();
   virtual void print() const;
-  short        get(int i,
-                   int j) const;
-  virtual void         set(int   i,
-                   int   j,
-                   short v);
+  short get(int i, int j) const {
+    i = mod(i,h);
+    j = mod(j,w);
+    return this->read[i][j];
+  }
+  virtual void set(int i, int j, short v);
   void         swap();
-  void         forEach(std::function<short(int, int, short, int)>f);
+  void         forEach(std::function<short(int, int, short, int)> f);
   void         forEach(int start,
                        int end,
-                       std::function<short(int, int, short, int)>f);
+                       std::function<short(int, int, short, int)> f);
 
 protected:
 

@@ -43,12 +43,6 @@ void Matrix::print() const{
   std::cout << std::endl;
 }
 
-short Matrix::get(int i, int j) const{
-  i = mod(i,h);
-  j = mod(j,w);
-  return this->read[i][j];
-}
-
 void Matrix::set(int i, int j, short v) {
   this->write[mod(i, this->h)][mod(j, this->w)] = v;
 }
