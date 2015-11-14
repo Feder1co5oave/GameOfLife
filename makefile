@@ -26,8 +26,11 @@ build/Matrix.o: Matrix.cpp
 				-O3 \
 				-o build/Matrix.o
 
+build/Barrier.o: Barrier.cpp Barrier.hpp
+	g++ -Wall -Wextra -pedantic -std=c++11 -c -o $@ $<
+
 build:
 	mkdir -p build
 
 clean:
-		rm -Rvf build main.out
+	rm -Rvf build main.out
