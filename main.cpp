@@ -5,6 +5,7 @@
 #include <thread>
 #include <vector>
 #include "Matrix.hpp"
+#include "Barrier.hpp"
 #if !NO_OPENCV
   # include "MatrixG.hpp"
 #endif // if NO_OPENCV
@@ -34,12 +35,21 @@ short lifeLogic(int i, int j, short v, int alive) {
   return v;
 }
 
-void bodyThread(Matrix *m, int start, int end) {
-  m->forEach(start, end, lifeLogic);
+void bodyThread(Matrix *m, int start, int end, int iterations, barrier *bar) {
+  for (int k = 0; k < iterations; k++) {
+    m->forEach(start, end, lifeLogic);
+    bar->await([&]{
+      m->swap();
+      m->print();
+      cout << "step " << k << endl;
+    });
+  }
 }
 
-void bodySequential(Matrix *m) {
-  m->forEach(lifeLogic);
+void bodySequential(Matrix *m, int iterations) {
+  for (int k = 0; k < iterations; k++) {
+    m->forEach(lifeLogic);
+  }
 }
 
 int main(int argc, char *argv[]) {
@@ -80,31 +90,25 @@ int main(int argc, char *argv[]) {
   m = new Matrix(h, w);
   #endif // if NO_OPENCV
 
-  for (int k = 0; k < s || s == 0; k++) {
-    std::cout << "step " << k << std::endl;
+  if (nw != 0) {
+    int nRow = (h / nw);
+    std::vector<std::thread> tid;
+    barrier bar(nw);
 
-    if (nw != 0) {
-      int nRow = (h / nw);
-      std::vector<std::thread> tid;
+    for (int i = 0; i < nw; i++) {
+      int start = nRow * i;
+      int end   = i != nw - 1 ? start + nRow : h;
+      std::cout << "thread" << i << " start: " << start << " end:" << end <<
+        std::endl;
 
-
-      for (int i = 0; i < nw; i++) {
-        int start = nRow * i;
-        int end   = i != nw - 1 ? start + nRow : h;
-        std::cout << "thread" << i << " start: " << start << " end:" << end <<
-          std::endl;
-
-        tid.push_back(std::thread(bodyThread, m, start, end));
-      }
-
-      for (int i = 0; i < nw; i++) tid[i].join();
-    } else {
-      bodySequential(m);
+      tid.push_back(std::thread(bodyThread, m, start, end, s, &bar));
     }
 
-    m->swap();
-    m->print();
+    for (int i = 0; i < nw; i++) tid[i].join();
+  } else {
+    bodySequential(m, s);
   }
+
   delete m;
   return 0;
 }

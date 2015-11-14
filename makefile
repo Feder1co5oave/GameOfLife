@@ -1,13 +1,13 @@
 all_build: build main.out
 
-main.out: main.cpp build/Matrix.o build/MatrixG.o
-	g++ main.cpp build/MatrixG.o build/Matrix.o \
+main.out: main.cpp build/Matrix.o build/MatrixG.o build/Barrier.o
+	g++ $^ \
 			-std=c++11 \
 			-pthread \
 			`pkg-config --cflags --libs opencv` \
 			-g \
 			-O3 \
-			-o main.out
+			-o $@
 
 build/MatrixG.o: MatrixG.cpp
 	g++ MatrixG.cpp \
