@@ -1,24 +1,3 @@
-all_build: build main.mic.out
+include makefile.xeon
 
-main.mic.out: main.cpp build/Matrix.o
-	icc main.cpp build/Matrix.o \
-			-std=c++11 \
-			-DNO_OPENCV \
-			-pthread \
-			-O3 \
-			-mmic \
-			-o main.mic.out
-
-build/Matrix.o: Matrix.cpp
-	icc Matrix.cpp \
-			-c \
-			-std=c++11 \
-			-O3 \
-			-mmic \
-			-o build/Matrix.o
-
-build:
-	mkdir -p build
-
-clean:
-	rm -Rvf build main.mic.out
+CXXFLAGS += -mmic

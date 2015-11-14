@@ -1,33 +1,19 @@
+OPENCV = `pkg-config --cflags --libs opencv`
+CXX = g++
+CXXFLAGS = -std=c++11 -pthread -O3
+
+.PHONY: all_build build clean
+
 all_build: build main.out
 
 main.out: main.cpp build/Matrix.o build/MatrixG.o build/Barrier.o
-	g++ $^ \
-			-std=c++11 \
-			-pthread \
-			`pkg-config --cflags --libs opencv` \
-			-g \
-			-O3 \
-			-o $@
+	$(CXX) $^ $(CXXFLAGS) $(OPENCV) -o $@
 
-build/MatrixG.o: MatrixG.cpp
-	g++ MatrixG.cpp \
-			-g \
-			-c \
-			-std=c++11 \
-			`pkg-config --cflags --libs opencv` \
-			-O3 \
-			-o build/MatrixG.o
+build/%.o: %.cpp %.hpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-build/Matrix.o: Matrix.cpp
-		g++ Matrix.cpp \
-				-g \
-				-c \
-				-std=c++11 \
-				-O3 \
-				-o build/Matrix.o
-
-build/Barrier.o: Barrier.cpp Barrier.hpp
-	g++ -Wall -Wextra -pedantic -std=c++11 -c -o $@ $<
+build/MatrixG.o: MatrixG.cpp MatrixG.hpp
+	$(CXX) $(CXXFLAGS) $(OPENCV) -c -o $@ $<
 
 build:
 	mkdir -p build
