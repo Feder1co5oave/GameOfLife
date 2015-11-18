@@ -16,6 +16,7 @@ Matrix::Matrix(int h, int w) {
 
     for (int j = 0; j < w; j++) {
       this->read[i][j] = floor(rand() % 2);
+      this->write[i][j] = 0;
     }
   }
 }
