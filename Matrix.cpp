@@ -43,8 +43,12 @@ void Matrix::print() const{
   std::cout << std::endl;
 }
 
-void Matrix::set(int i, int j, unsigned short v) {
+inline void Matrix::set(int i, int j, unsigned short v) {
   this->write[mod(i, this->h)][mod(j, this->w)] = v;
+}
+
+inline unsigned short Matrix::get(int i, int j) const {
+  return this->read[mod(i,this->h)][mod(j,this->w)];
 }
 
 void Matrix::forEach(std::function<unsigned short(int, int, unsigned short, int)>f) {
@@ -65,8 +69,7 @@ void Matrix::forEach(int start,
 }
 
 void Matrix::swap() {
-  unsigned short **tmp = this->read;
-
+  this->tmp = this->read;
   this->read  = this->write;
   this->write = tmp;
 }
@@ -84,6 +87,6 @@ int Matrix::countAlive(int x, int y) const{
   return count;
 }
 
-unsigned short Matrix::mod(int a, int b) const{
+inline unsigned short Matrix::mod(int a, int b) const{
   return (a % b + b) % b;
 }
