@@ -4,7 +4,7 @@ CXXFLAGS = -std=c++11 -pthread -O3
 
 .PHONY: all_build build clean
 
-all_build: build main.mic.out
+all_build: build main.xeon.out
 
 main.mic.out: main.cpp build/Matrix.o build/Barrier.o
 	$(CXX) $^ $(CXXFLAGS) -DNO_OPENCV -o $@
