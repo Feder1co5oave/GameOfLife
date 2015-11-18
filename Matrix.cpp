@@ -43,10 +43,6 @@ void Matrix::print() const{
   std::cout << std::endl;
 }
 
-void Matrix::set(int i, int j, short v) {
-  this->write[mod(i, this->h)][mod(j, this->w)] = v;
-}
-
 void Matrix::forEach(std::function<short(int, int, short, int)>f) {
   forEach(0, this->h, f);
 }
