@@ -26,6 +26,8 @@ public:
   void         forEach(int start,
                        int end,
                        std::function<short(int, int, short, int)> f);
+  int countAlive(int x, int y) const;
+  inline int getWidth() { return w; }
 
 protected:
 
@@ -33,10 +35,9 @@ protected:
   int     w, h;
 
 private:
-  short mod(int x,
-            int y) const;
-  int   countAlive(int x,
-                   int y) const;
+  inline int mod(int a, int b) const {
+    return (a % b + b) % b;
+  }
 };
 
 #endif // ifndef Matrix_h_

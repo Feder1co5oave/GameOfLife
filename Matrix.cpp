@@ -76,7 +76,3 @@ int Matrix::countAlive(int x, int y) const{
   }
   return count;
 }
-
-short Matrix::mod(int a, int b) const{
-  return (a % b + b) % b;
-}
