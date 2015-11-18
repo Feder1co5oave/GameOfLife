@@ -36,17 +36,11 @@ void Matrix::print() const{
 
   for (int i = 0; i < h; i++) {
     for (int j = 0; j < w; j++) {
-      std::cout << this->read[i][j] << " ";
+      std::cout << (this->read[i][j] ? "\u2588\u2588" : "  ");
     }
     std::cout << std::endl;
   }
   std::cout << std::endl;
-}
-
-short Matrix::get(int i, int j) const{
-  i = mod(i,h);
-  j = mod(j,w);
-  return this->read[i][j];
 }
 
 void Matrix::set(int i, int j, short v) {

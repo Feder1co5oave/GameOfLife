@@ -1,7 +1,6 @@
 #ifndef MatrixG_h_
 #define MatrixG_h_
 
-#include <functional>
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>

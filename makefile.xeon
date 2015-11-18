@@ -1,19 +1,16 @@
+CXX = icc
+CXXFLAGS = -std=c++11 -pthread -O3
+
+
+.PHONY: all_build build clean
+
 all_build: build main.mic.out
 
-main.mic.out: main.cpp build/Matrix.o
-	icc main.cpp build/Matrix.o \
-			-std=c++11 \
-			-DNO_OPENCV \
-			-pthread \
-			-O3 \
-			-o main.mic.out
+main.mic.out: main.cpp build/Matrix.o build/Barrier.o
+	$(CXX) $^ $(CXXFLAGS) -DNO_OPENCV -o $@
 
-build/Matrix.o: Matrix.cpp
-	icc Matrix.cpp \
-			-c \
-			-std=c++11 \
-			-O3 \
-			-o build/Matrix.o
+build/%.o: %.cpp %.hpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 build:
 	mkdir -p build
