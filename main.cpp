@@ -10,6 +10,7 @@
   # include "MatrixG.hpp"
 #endif // if NO_OPENCV
 
+#if !EXTREME_TEST
 char* getArgument(int argc, char **argv, const std::string& option) {
   char **end  = argv + argc;
   char **itOp = std::find(argv, end, option);
@@ -23,6 +24,8 @@ bool existArgument(int argc, char **argv, const std::string& option) {
 
   return std::find(argv, end, option) != end;
 }
+
+#endif // if !EXTREME_TEXT
 
 unsigned short lifeLogic(int i, int j, unsigned short v, int alive) {
   if (v == 1) {
@@ -40,6 +43,7 @@ void bodyThread(Matrix *m, int start, int end, int iterations, barrier *bar) {
     m->forEach(start, end, lifeLogic);
     bar->await([&] {
       m->swap();
+
       // m->print();
       // cout << "step " << k << endl;
     });
@@ -53,6 +57,8 @@ void bodySequential(Matrix *m, int iterations) {
 }
 
 int main(int argc, char *argv[]) {
+  #if !EXTREME_TEST
+
   if (existArgument(argc, argv, "--help") ||
       existArgument(argc, argv, "-h")) {
     std::cout <<
@@ -62,12 +68,13 @@ int main(int argc, char *argv[]) {
     std::cout << "--width <number> \t width of the matrix" << std::endl;
     std::cout << "--step <number> \t number of step, if 0 run forever" <<
       std::endl;
-    #if !NO_OPENCV
+    # if !NO_OPENCV
     std::cout << "--graphic \t\t activate the graphic mode" << std::endl;
-    #endif // if !NO_OPENCV
+    # endif // if !NO_OPENCV
     std::cout << "--help or -h \t\t this help" << std::endl;
     return 0;
   }
+
 
   char *nwStr = getArgument(argc, argv, "--thread");
   int   nw    = nwStr ? std::atoi(nwStr) : std::thread::hardware_concurrency();
@@ -80,9 +87,16 @@ int main(int argc, char *argv[]) {
 
   char *sStr = getArgument(argc, argv, "--step");
   int   s    = sStr ? std::atoi(sStr) : 1000;
+  #else // if EXTREME_TEXT
+  int h  = atoi(argv[1]);
+  int w  = atoi(argv[1]);
+  int s  = atoi(argv[2]);
+  int nw = atoi(argv[3]);
+  #endif // if EXTREME_TEXT
+
 
   Matrix *m;
-  #if !NO_OPENCV
+  #if !NO_OPENCV && !EXTREME_TEST
   m = (existArgument(argc, argv, "--graphic")) ?
       new MatrixG(h, w) :
       new Matrix(h, w);

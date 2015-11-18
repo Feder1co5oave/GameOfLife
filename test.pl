@@ -8,7 +8,7 @@ my $max=0;
 my $min=-1;
 foreach my $i (0..N) {
   #\time --format="%E" ./main.out --step 1000 --height 1000 --width 1000 --thread 16
-  my $r=`\\time --format="%e" ./main.out --step $STEP --height $SIZE --width $SIZE --thread 16 2>&1`;
+  my $r=`\\time --format="%e" ./main.out $SIZE $STEP 16 2>&1`;
   $sum=$sum + $r;
   $r =~ s/^\s+|\s+$//g;
   if ($r > $max) {
