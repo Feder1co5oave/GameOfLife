@@ -16,4 +16,4 @@ build:
 	mkdir -p build
 
 clean:
-	rm -Rvf build main.mic.out
+	rm -Rvf build main.xeon.out
