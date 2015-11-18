@@ -38,10 +38,10 @@ short lifeLogic(int i, int j, short v, int alive) {
 void bodyThread(Matrix *m, int start, int end, int iterations, barrier *bar) {
   for (int k = 0; k < iterations; k++) {
     m->forEach(start, end, lifeLogic);
-    bar->await([&]{
+    bar->await([&] {
       m->swap();
-      m->print();
-      cout << "step " << k << endl;
+      // m->print();
+      // cout << "step " << k << endl;
     });
   }
 }
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
       std::endl;
     #if !NO_OPENCV
     std::cout << "--graphic \t\t activate the graphic mode" << std::endl;
-    #endif
+    #endif // if !NO_OPENCV
     std::cout << "--help or -h \t\t this help" << std::endl;
     return 0;
   }
@@ -73,13 +73,13 @@ int main(int argc, char *argv[]) {
   int   nw    = nwStr ? std::atoi(nwStr) : std::thread::hardware_concurrency();
 
   char *hStr = getArgument(argc, argv, "--height");
-  int   h    = hStr ? std::atoi(hStr) : 100;
+  int   h    = hStr ? std::atoi(hStr) : 1000;
 
   char *wStr = getArgument(argc, argv, "--width");
-  int   w    = wStr ? std::atoi(wStr) : 100;
+  int   w    = wStr ? std::atoi(wStr) : 1000;
 
   char *sStr = getArgument(argc, argv, "--step");
-  int   s    = sStr ? std::atoi(sStr) : 100;
+  int   s    = sStr ? std::atoi(sStr) : 1000;
 
   Matrix *m;
   #if !NO_OPENCV
@@ -98,8 +98,9 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < nw; i++) {
       int start = nRow * i;
       int end   = i != nw - 1 ? start + nRow : h;
-      std::cout << "thread" << i << " start: " << start << " end:" << end <<
-        std::endl;
+
+      // std::cout << "thread" << i << " start: " << start << " end:" << end <<
+      // std::endl;
 
       tid.push_back(std::thread(bodyThread, m, start, end, s, &bar));
     }
