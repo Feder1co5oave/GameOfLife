@@ -6,7 +6,7 @@ CXXFLAGS = -std=c++11 -pthread -O3
 
 all_build: build main.xeon.out
 
-main.mic.out: main.cpp build/Matrix.o build/Barrier.o
+main.xeon.out: main.cpp build/Matrix.o build/Barrier.o
 	$(CXX) $^ $(CXXFLAGS) -DNO_OPENCV -o $@
 
 build/%.o: %.cpp %.hpp
