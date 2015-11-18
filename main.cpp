@@ -24,7 +24,7 @@ bool existArgument(int argc, char **argv, const std::string& option) {
   return std::find(argv, end, option) != end;
 }
 
-short lifeLogic(int i, int j, short v, int alive) {
+unsigned short lifeLogic(int i, int j, unsigned short v, int alive) {
   if (v == 1) {
     if (alive < 2) return 0;
 

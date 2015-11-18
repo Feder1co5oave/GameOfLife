@@ -7,12 +7,12 @@ Matrix::Matrix(int h, int w) {
   srand(time(0));
   this->h     = h;
   this->w     = w;
-  this->read  = new short *[h];
-  this->write = new short *[h];
+  this->read  = new unsigned short *[h];
+  this->write = new unsigned short *[h];
 
   for (int i = 0; i < h; i++) {
-    this->read[i]  = new short[w];
-    this->write[i] = new short[w];
+    this->read[i]  = new unsigned short[w];
+    this->write[i] = new unsigned short[w];
 
     for (int j = 0; j < w; j++) {
       this->read[i][j] = floor(rand() % 2);
@@ -43,20 +43,20 @@ void Matrix::print() const{
   std::cout << std::endl;
 }
 
-void Matrix::set(int i, int j, short v) {
+void Matrix::set(int i, int j, unsigned short v) {
   this->write[mod(i, this->h)][mod(j, this->w)] = v;
 }
 
-void Matrix::forEach(std::function<short(int, int, short, int)>f) {
+void Matrix::forEach(std::function<unsigned short(int, int, unsigned short, int)>f) {
   forEach(0, this->h, f);
 }
 
 void Matrix::forEach(int start,
                      int end,
-                     std::function<short(int, int, short, int)>f) {
+                     std::function<unsigned short(int, int, unsigned short, int)>f) {
   for (int i = start; i < end; i++) {
     for (int j = 0; j < this->w; j++) {
-      short r = f(i, j, this->read[i][j], countAlive(i, j));
+      unsigned short r = f(i, j, this->read[i][j], countAlive(i, j));
       if (r!=-1) {
         set(i,j,r);
       }
@@ -65,7 +65,7 @@ void Matrix::forEach(int start,
 }
 
 void Matrix::swap() {
-  short **tmp = this->read;
+  unsigned short **tmp = this->read;
 
   this->read  = this->write;
   this->write = tmp;
@@ -84,6 +84,6 @@ int Matrix::countAlive(int x, int y) const{
   return count;
 }
 
-short Matrix::mod(int a, int b) const{
+unsigned short Matrix::mod(int a, int b) const{
   return (a % b + b) % b;
 }

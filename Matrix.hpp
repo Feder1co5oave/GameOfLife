@@ -13,25 +13,25 @@ public:
          int w);
   virtual ~Matrix();
   virtual void print() const;
-  short get(int i, int j) const {
+  unsigned short get(int i, int j) const {
     i = mod(i,h);
     j = mod(j,w);
     return this->read[i][j];
   }
-  virtual void set(int i, int j, short v);
+  virtual void set(int i, int j, unsigned short v);
   void         swap();
-  void         forEach(std::function<short(int, int, short, int)> f);
+  void         forEach(std::function<unsigned short(int, int, unsigned short, int)> f);
   void         forEach(int start,
                        int end,
-                       std::function<short(int, int, short, int)> f);
+                       std::function<unsigned short(int, int, unsigned short, int)> f);
 
 protected:
 
-  short **read, **write;
+  unsigned short **read, **write;
   int     w, h;
 
 private:
-  short mod(int x,
+  unsigned short mod(int x,
             int y) const;
   int   countAlive(int x,
                    int y) const;
