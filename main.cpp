@@ -32,7 +32,7 @@ short lifeLogic(int i, int j, short v, int alive) {
   } else if (v == 0) {
     if (alive == 3) return 1;
   }
-  return v;
+  return -1;
 }
 
 void bodyThread(Matrix *m, int start, int end, int iterations, barrier *bar) {

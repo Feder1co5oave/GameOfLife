@@ -56,7 +56,10 @@ void Matrix::forEach(int start,
                      std::function<short(int, int, short, int)>f) {
   for (int i = start; i < end; i++) {
     for (int j = 0; j < this->w; j++) {
-      set(i,j,f(i, j, this->read[i][j], countAlive(i, j)));
+      short r = f(i, j, this->read[i][j], countAlive(i, j));
+      if (r!=-1) {
+        set(i,j,r);
+      }
     }
   }
 }

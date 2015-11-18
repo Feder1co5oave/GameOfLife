@@ -4,9 +4,9 @@ CXXFLAGS = -std=c++11 -pthread -O3
 
 .PHONY: all_build build clean
 
-all_build: build main.xeon.out
+all_build: build main.out
 
-main.xeon.out: main.cpp build/Matrix.o build/Barrier.o
+main.out: main.cpp build/Matrix.o build/Barrier.o
 	$(CXX) $^ $(CXXFLAGS) -DNO_OPENCV -o $@
 
 build/%.o: %.cpp %.hpp
@@ -16,4 +16,4 @@ build:
 	mkdir -p build
 
 clean:
-	rm -Rvf build main.xeon.out
+	rm -Rvf build main.out
