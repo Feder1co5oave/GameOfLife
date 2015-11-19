@@ -3,6 +3,8 @@
 
 #include <functional>
 
+typedef unsigned char cell_t;
+
 class Matrix {
   Matrix(Matrix const&) =delete;
   Matrix& operator=(Matrix const&) =delete;
@@ -13,25 +15,25 @@ public:
          int w);
   virtual ~Matrix();
   void print() const;
-  inline short get(int i, int j) const {
+  inline cell_t get(int i, int j) const {
     i = mod(i,h);
     j = mod(j,w);
     return read[i][j];
   }
-  inline void set(int i, int j, short v) {
+  inline void set(int i, int j, cell_t v) {
   	write[mod(i,h)][mod(j,w)] = v;
   }
   void         swap();
-  void         forEach(std::function<short(int, int, short, int)> f);
+  void         forEach(std::function<cell_t(int, int, cell_t, int)> f);
   void         forEach(int start,
                        int end,
-                       std::function<short(int, int, short, int)> f);
+                       std::function<cell_t(int, int, cell_t, int)> f);
   int countAlive(int x, int y) const;
   inline int getWidth() { return w; }
 
 protected:
 
-  short **read, **write;
+  cell_t **read, **write;
   int     w, h;
 
 private:

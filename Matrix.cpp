@@ -7,12 +7,12 @@ Matrix::Matrix(int h, int w) {
   srand(time(0));
   this->h     = h;
   this->w     = w;
-  this->read  = new short *[h];
-  this->write = new short *[h];
+  this->read  = new cell_t *[h];
+  this->write = new cell_t *[h];
 
   for (int i = 0; i < h; i++) {
-    this->read[i]  = new short[w];
-    this->write[i] = new short[w];
+    this->read[i]  = new cell_t[w];
+    this->write[i] = new cell_t[w];
 
     for (int j = 0; j < w; j++) {
       this->read[i][j] = floor(rand() % 2);
@@ -43,13 +43,13 @@ void Matrix::print() const{
   std::cout << std::endl;
 }
 
-void Matrix::forEach(std::function<short(int, int, short, int)>f) {
+void Matrix::forEach(std::function<cell_t(int, int, cell_t, int)>f) {
   forEach(0, this->h, f);
 }
 
 void Matrix::forEach(int start,
                      int end,
-                     std::function<short(int, int, short, int)>f) {
+                     std::function<cell_t(int, int, cell_t, int)>f) {
   for (int i = start; i < end; i++) {
     for (int j = 0; j < this->w; j++) {
       set(i,j,f(i, j, this->read[i][j], countAlive(i, j)));
@@ -58,7 +58,7 @@ void Matrix::forEach(int start,
 }
 
 void Matrix::swap() {
-  short **tmp = this->read;
+  cell_t **tmp = this->read;
 
   this->read  = this->write;
   this->write = tmp;

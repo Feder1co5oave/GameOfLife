@@ -24,18 +24,17 @@ bool existArgument(int argc, char **argv, const std::string& option) {
   return std::find(argv, end, option) != end;
 }
 
-short lifeLogicM[2][9] = {
+cell_t lifeLogicM[2][9] = {
 	{0, 0, 0, 1, 0, 0, 0, 0, 0},
 	{0, 0, 1, 1, 0, 0, 0, 0, 0}
 };
 
-short lifeLogic(int i, int j, short v, int alive) {
+cell_t lifeLogic(int i, int j, cell_t v, int alive) {
   return lifeLogicM[v][alive];
 }
 
 void bodyThread(Matrix *m, int start, int end, int iterations, barrier *bar) {
   for (int k = 0; k < iterations; k++) {
-    m->forEach(start, end, lifeLogic);
     for (int i = start; i < end; i++) {
     	for (int j = 0, w = m->getWidth(); j < w; j++) {
     		m->set(i, j, lifeLogicM[m->get(i, j)][m->countAlive(i, j)]);
