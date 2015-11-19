@@ -49,7 +49,7 @@ void Matrix::forEach(long start,
                      std::function<cell_t(long, long, cell_t, long)> f) {
   for (long i = start; i < end; i++) {
     for (long j = 0; j < w; j++) {
-      cell_t r = f(i, j, this->read[i][j], countAlive(i, j)));
+      cell_t r = f(i, j, this->read[i][j], countAlive(i, j));
       if (r != -1) set(i,j,r);
     }
   }
