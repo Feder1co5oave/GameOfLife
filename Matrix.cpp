@@ -3,25 +3,25 @@
 #include <cmath>
 #include "Matrix.hpp"
 
-Matrix::Matrix(int h, int w) {
+Matrix::Matrix(long h, long w) {
   srand(time(0));
   this->h     = h;
   this->w     = w;
   this->read  = new cell_t *[h];
   this->write = new cell_t *[h];
 
-  for (int i = 0; i < h; i++) {
+  for (long i = 0; i < h; i++) {
     this->read[i]  = new cell_t[w];
     this->write[i] = new cell_t[w];
 
-    for (int j = 0; j < w; j++) {
+    for (long j = 0; j < w; j++) {
       this->read[i][j] = floor(rand() % 2);
     }
   }
 }
 
 Matrix::~Matrix() {
-  for (int i = 0; i < this->h; i++) {
+  for (long i = 0; i < h; i++) {
     delete[] this->read[i];
     delete[] this->write[i];
   }
@@ -29,13 +29,9 @@ Matrix::~Matrix() {
   delete[] this->write;
 }
 
-void Matrix::print() const{
-  // std::cout << "\n";
-  int h = this->h;
-  int w = this->w;
-
-  for (int i = 0; i < h; i++) {
-    for (int j = 0; j < w; j++) {
+void Matrix::print() const {
+  for (long i = 0; i < h; i++) {
+    for (long j = 0; j < w; j++) {
       std::cout << (this->read[i][j] ? "\u2588\u2588" : "  ");
     }
     std::cout << std::endl;
@@ -43,15 +39,15 @@ void Matrix::print() const{
   std::cout << std::endl;
 }
 
-void Matrix::forEach(std::function<cell_t(int, int, cell_t, int)>f) {
+void Matrix::forEach(std::function<cell_t(long, long, cell_t, long)>f) {
   forEach(0, this->h, f);
 }
 
-void Matrix::forEach(int start,
-                     int end,
-                     std::function<cell_t(int, int, cell_t, int)>f) {
-  for (int i = start; i < end; i++) {
-    for (int j = 0; j < this->w; j++) {
+void Matrix::forEach(long start,
+                     long end,
+                     std::function<cell_t(long, long, cell_t, long)> f) {
+  for (long i = start; i < end; i++) {
+    for (long j = 0; j < w; j++) {
       set(i,j,f(i, j, this->read[i][j], countAlive(i, j)));
     }
   }
@@ -64,7 +60,7 @@ void Matrix::swap() {
   this->write = tmp;
 }
 
-int Matrix::countAlive(int x, int y) const {
+long Matrix::countAlive(long x, long y) const {
   return  get(x-1,y-1) + get(x-1,y) + get(x-1,y+1)
         + get(x,  y-1)              + get(x,  y+1)
         + get(x+1,y-1) + get(x+1,y) + get(x+1,y+1);

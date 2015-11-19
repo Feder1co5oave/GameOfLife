@@ -11,30 +11,30 @@ class Matrix {
 
 public:
 
-  Matrix(int h,
-         int w);
+  Matrix(long h,
+         long w);
   virtual ~Matrix();
   void print() const;
-  inline cell_t get(int i, int j) const {
+  inline cell_t get(long i, long j) const {
     i = mod(i,h);
     j = mod(j,w);
     return read[i][j];
   }
-  inline void set(int i, int j, cell_t v) {
+  inline void set(long i, long j, cell_t v) {
   	write[mod(i,h)][mod(j,w)] = v;
   }
   void         swap();
-  void         forEach(std::function<cell_t(int, int, cell_t, int)> f);
-  void         forEach(int start,
-                       int end,
-                       std::function<cell_t(int, int, cell_t, int)> f);
-  int countAlive(int x, int y) const;
-  inline int getWidth() { return w; }
+  void         forEach(std::function<cell_t(long, long, cell_t, long)> f);
+  void         forEach(long start,
+                       long end,
+                       std::function<cell_t(long, long, cell_t, long)> f);
+  long countAlive(long x, long y) const;
+  inline long getWidth() { return w; }
 
 protected:
 
   cell_t **read, **write;
-  int     w, h;
+  long     w, h;
 
 private:
   template<typename T>

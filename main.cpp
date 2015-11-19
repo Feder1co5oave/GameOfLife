@@ -29,14 +29,14 @@ cell_t lifeLogicM[2][9] = {
 	{0, 0, 1, 1, 0, 0, 0, 0, 0}
 };
 
-cell_t lifeLogic(int i, int j, cell_t v, int alive) {
+cell_t lifeLogic(long i, long j, cell_t v, long alive) {
   return lifeLogicM[v][alive];
 }
 
-void bodyThread(Matrix *m, int start, int end, int iterations, barrier *bar) {
-  for (int k = 0; k < iterations; k++) {
-    for (int i = start; i < end; i++) {
-    	for (int j = 0, w = m->getWidth(); j < w; j++) {
+void bodyThread(Matrix *m, long start, long end, long iterations, barrier *bar) {
+  for (long k = 0; k < iterations; k++) {
+    for (long i = start; i < end; i++) {
+      for (long j = 0; j < m->getWidth(); j++) {
     		m->set(i, j, lifeLogicM[m->get(i, j)][m->countAlive(i, j)]);
     	}
     }	
@@ -48,8 +48,8 @@ void bodyThread(Matrix *m, int start, int end, int iterations, barrier *bar) {
   }
 }
 
-void bodySequential(Matrix *m, int iterations) {
-  for (int k = 0; k < iterations; k++) {
+void bodySequential(Matrix *m, long iterations) {
+  for (long k = 0; k < iterations; k++) {
     m->forEach(lifeLogic);
   }
 }
@@ -97,16 +97,16 @@ int main(int argc, char *argv[]) {
     std::vector<std::thread> tid;
     barrier bar(nw);
 
-    for (int i = 0; i < nw; i++) {
-      int start = nRow * i;
-      int end   = i != nw - 1 ? start + nRow : h;
+    for (long i = 0; i < nw; i++) {
+      long start = nRow * i;
+      long end   = i != nw - 1 ? start + nRow : h;
       std::cout << "thread" << i << " start: " << start << " end:" << end <<
         std::endl;
 
       tid.push_back(std::thread(bodyThread, m, start, end, s, &bar));
     }
 
-    for (int i = 0; i < nw; i++) tid[i].join();
+    for (long i = 0; i < nw; i++) tid[i].join();
   } else {
     bodySequential(m, s);
   }
