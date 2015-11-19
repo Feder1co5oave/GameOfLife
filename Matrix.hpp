@@ -35,8 +35,11 @@ protected:
   int     w, h;
 
 private:
-  inline int mod(int a, int b) const {
-    return (a % b + b) % b;
+  template<typename T>
+  inline static T mod(T a, T b) {
+    if (a == b) return 0;
+    if (a == -1) return b-1;
+    return a;
   }
 };
 
