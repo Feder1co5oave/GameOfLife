@@ -4,10 +4,10 @@ CXXFLAGS = -std=c++11 -pthread -O3 -finline-functions
 
 .PHONY: all_build build clean
 
-all_build: build main.mic.out
+all_build: build main.out
 
-main.mic.out: main.cpp build/Matrix.o build/Barrier.o
-	$(CXX) $^ $(CXXFLAGS) -DNO_OPENCV -o $@
+main.out: main.cpp build/Matrix.o build/Barrier.o
+	$(CXX) $^ $(CXXFLAGS) -DNO_OPENCV -DEXTREME_TEST -o $@
 
 build/%.o: %.cpp %.hpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
@@ -16,4 +16,4 @@ build:
 	mkdir -p build
 
 clean:
-	rm -Rvf build main.mic.out
+	rm -Rvf build main.out

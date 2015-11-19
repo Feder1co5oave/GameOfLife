@@ -27,7 +27,7 @@ void MatrixG::print() const{
   cv::waitKey(1);
 }
 
-void MatrixG::set(int i, int j, short v){
+void MatrixG::set(int i, int j, unsigned short v){
   Matrix::set(i,j,v);
   if (v==1){
     this->screen.at<cv::Vec3b>(cv::Point(j, i)) = cv::Vec3b(255, 255, 255);

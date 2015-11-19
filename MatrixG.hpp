@@ -17,7 +17,7 @@ public:
   void  print() const override;
   void set (int   i,
                    int   j,
-                   short v) override;
+                   unsigned short v) override;
 
 private:
   cv::Mat screen;

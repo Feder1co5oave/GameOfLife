@@ -6,8 +6,8 @@
 typedef unsigned char cell_t;
 
 class Matrix {
-  Matrix(Matrix const&) =delete;
-  Matrix& operator=(Matrix const&) =delete;
+  Matrix(Matrix const&)            = delete;
+  Matrix& operator=(Matrix const&) = delete;
 
 public:
 
@@ -33,7 +33,7 @@ public:
 
 protected:
 
-  cell_t **read, **write;
+  cell_t **read, **write, **tmp;
   long     w, h;
 
 private:

@@ -10,6 +10,7 @@
   # include "MatrixG.hpp"
 #endif // if NO_OPENCV
 
+#if !EXTREME_TEST
 char* getArgument(int argc, char **argv, const std::string& option) {
   char **end  = argv + argc;
   char **itOp = std::find(argv, end, option);
@@ -23,6 +24,8 @@ bool existArgument(int argc, char **argv, const std::string& option) {
 
   return std::find(argv, end, option) != end;
 }
+
+#endif // if !EXTREME_TEST
 
 cell_t lifeLogicM[2][9] = {
 	{0, 0, 0, 1, 0, 0, 0, 0, 0},
@@ -42,8 +45,9 @@ void bodyThread(Matrix *m, long start, long end, long iterations, barrier *bar) 
     }	
     bar->await([&]{
       m->swap();
-      m->print();
-      cout << "step " << k << endl;
+
+      // m->print();
+      // cout << "step " << k << endl;
     });
   }
 }
@@ -55,6 +59,8 @@ void bodySequential(Matrix *m, long iterations) {
 }
 
 int main(int argc, char *argv[]) {
+  #if !EXTREME_TEST
+
   if (existArgument(argc, argv, "--help") ||
       existArgument(argc, argv, "-h")) {
     std::cout <<
@@ -64,27 +70,35 @@ int main(int argc, char *argv[]) {
     std::cout << "--width <number> \t width of the matrix" << std::endl;
     std::cout << "--step <number> \t number of step, if 0 run forever" <<
       std::endl;
-    #if !NO_OPENCV
+    # if !NO_OPENCV
     std::cout << "--graphic \t\t activate the graphic mode" << std::endl;
-    #endif
+    # endif // if !NO_OPENCV
     std::cout << "--help or -h \t\t this help" << std::endl;
     return 0;
   }
+
 
   char *nwStr = getArgument(argc, argv, "--thread");
   int   nw    = nwStr ? std::atoi(nwStr) : std::thread::hardware_concurrency();
 
   char *hStr = getArgument(argc, argv, "--height");
-  int   h    = hStr ? std::atoi(hStr) : 100;
+  int   h    = hStr ? std::atoi(hStr) : 1000;
 
   char *wStr = getArgument(argc, argv, "--width");
-  int   w    = wStr ? std::atoi(wStr) : 100;
+  int   w    = wStr ? std::atoi(wStr) : 1000;
 
   char *sStr = getArgument(argc, argv, "--step");
-  int   s    = sStr ? std::atoi(sStr) : 100;
+  int   s    = sStr ? std::atoi(sStr) : 1000;
+  #else // if EXTREME_TEST
+  int h  = atoi(argv[1]);
+  int w  = atoi(argv[1]);
+  int s  = atoi(argv[2]);
+  int nw = atoi(argv[3]);
+  #endif // if EXTREME_TEST
+
 
   Matrix *m;
-  #if !NO_OPENCV
+  #if !NO_OPENCV && !EXTREME_TEST
   m = (existArgument(argc, argv, "--graphic")) ?
       new MatrixG(h, w) :
       new Matrix(h, w);
@@ -100,8 +114,8 @@ int main(int argc, char *argv[]) {
     for (long i = 0; i < nw; i++) {
       long start = nRow * i;
       long end   = i != nw - 1 ? start + nRow : h;
-      std::cout << "thread" << i << " start: " << start << " end:" << end <<
-        std::endl;
+
+      // std::cout << "thread" << i << " start: " << start << " end:" << end << std::endl;
 
       tid.push_back(std::thread(bodyThread, m, start, end, s, &bar));
     }
