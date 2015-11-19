@@ -62,6 +62,6 @@ void Matrix::swap() {
 
 long Matrix::countAlive(long x, long y) const {
   return  get(x-1,y-1) + get(x-1,y) + get(x-1,y+1)
-        + get(x,  y-1)              + get(x,  y+1)
-        + get(x+1,y-1) + get(x+1,y) + get(x+1,y+1);
+         + get(x,  y-1)              + get(x,  y+1)
+         + get(x+1,y-1) + get(x+1,y) + get(x+1,y+1);
 }
