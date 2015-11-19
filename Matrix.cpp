@@ -64,15 +64,8 @@ void Matrix::swap() {
   this->write = tmp;
 }
 
-int Matrix::countAlive(int x, int y) const{
-  int count = 0;
-
-  for (int i = x - 1; i <= x + 1; i++) {
-    for (int j = y - 1; j <= y + 1; j++) {
-      if (((i != x) || (j != y)) && (get(i, j) == 1)) {
-        count++;
-      }
-    }
-  }
-  return count;
+int Matrix::countAlive(int x, int y) const {
+  return  get(x-1,y-1) + get(x-1,y) + get(x-1,y+1)
+        + get(x,  y-1)              + get(x,  y+1)
+        + get(x+1,y-1) + get(x+1,y) + get(x+1,y+1);
 }
