@@ -23,11 +23,11 @@ public:
   inline void set(long i, long j, cell_t v) {
   	write[mod(i,h)][mod(j,w)] = v;
   }
-  void         swap();
-  void         forEach(std::function<cell_t(long, long, cell_t, long)> f);
-  void         forEach(long start,
-                       long end,
-                       std::function<cell_t(long, long, cell_t, long)> f);
+  void swap();
+
+  typedef std::function <cell_t(long, long, cell_t, long)> lambda;
+  void forEach(lambda f);
+  void forEach(long start, long end, lambda f);
   long countAlive(long x, long y) const;
   inline long getWidth() { return w; }
 
