@@ -11,8 +11,7 @@ class Matrix {
 
 public:
 
-  Matrix(long h,
-         long w);
+  Matrix(long h, long w, bool random = false);
   virtual ~Matrix();
   void print() const;
   inline cell_t get(long i, long j) const {

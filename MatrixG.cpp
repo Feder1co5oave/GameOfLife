@@ -2,27 +2,21 @@
 #include <cmath>
 #include "MatrixG.hpp"
 
-MatrixG::MatrixG(long h, long w) : Matrix(h, w) {
+MatrixG::MatrixG(long h, long w, bool random) : Matrix(h, w, random) {
   this->screen = cv::Mat::zeros(h, w, CV_8UC3);
   cv::imshow("test", this->screen);
   cv::moveWindow("test", 0, 20);
   cv::waitKey(1);
+  if (random) {
+    for (long i = 0; i < h; i++)
+      for (long j = 0; j < w; j++)
+        screen.at<cv::Vec3b>(cv::Point(i, j)) = (read[i][j] ?
+          cv::Vec3b(255, 255, 255) :
+          cv::Vec3b(0, 0, 0));
+  }
 }
 
 void MatrixG::print() const{
-  // long h = this->h;
-  // long w = this->w;
-  //
-  // for (long i = 0; i < h; i++) {
-  //   for (long j = 0; j < w; j++) {
-  //     if (this->read[i][j] == 1) {
-  //       this->screen.at<cv::Vec3b>(cv::Point(i, j)) = cv::Vec3b(255, 255, 255);
-  //     } else {
-  //       this->screen.at<cv::Vec3b>(cv::Point(i, j)) = cv::Vec3b(0, 0, 0);
-  //     }
-  //   }
-  // }
-
   cv::imshow("test", this->screen);
   cv::waitKey(1);
 }

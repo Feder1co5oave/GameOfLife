@@ -3,7 +3,8 @@
 #include <cmath>
 #include "Matrix.hpp"
 
-Matrix::Matrix(long h, long w) {
+
+Matrix::Matrix(long h, long w, bool random) {
   srand(time(0));
   this->h     = h;
   this->w     = w;
@@ -14,8 +15,14 @@ Matrix::Matrix(long h, long w) {
     this->read[i]  = new cell_t[w];
     this->write[i] = new cell_t[w];
 
+    if (random)
     for (long j = 0; j < w; j++) {
-      this->read[i][j] = floor(rand() % 2);
+      this->read[i][j] = rand() % 2;
+      this->write[i][j] = 0;
+    }
+    else
+    for (long j = 0; j < w; j++) {
+      this->read[i][j] = 0;
       this->write[i][j] = 0;
     }
   }

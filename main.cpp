@@ -100,8 +100,8 @@ int main(int argc, char *argv[]) {
   Matrix *m;
   #if !NO_OPENCV && !EXTREME_TEST
   m = (existArgument(argc, argv, "--graphic")) ?
-      new MatrixG(h, w) :
-      new Matrix(h, w);
+      new MatrixG(h, w, true) :
+      new Matrix(h, w, true);
   #else // if NO_OPENCV
   m = new Matrix(h, w);
   #endif // if NO_OPENCV
