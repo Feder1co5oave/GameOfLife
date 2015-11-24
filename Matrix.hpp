@@ -5,6 +5,8 @@
 
 typedef unsigned char cell_t;
 
+extern cell_t _lifeLogic[][9];
+
 class Matrix {
   Matrix(Matrix const&)            = delete;
   Matrix& operator=(Matrix const&) = delete;
@@ -29,6 +31,9 @@ public:
   void forEach(long start, long end, lambda f);
   long countAlive(long x, long y) const;
   inline long getWidth() { return w; }
+  inline static cell_t lifeLogic(cell_t cell, long liveNeighbors) {
+    return _lifeLogic[cell][liveNeighbors];
+  }
 
 protected:
 

@@ -27,20 +27,11 @@ bool existArgument(int argc, char **argv, const std::string& option) {
 
 #endif // if !EXTREME_TEST
 
-cell_t lifeLogicM[2][9] = {
-	{0, 0, 0, 1, 0, 0, 0, 0, 0},
-	{0, 0, 1, 1, 0, 0, 0, 0, 0}
-};
-
-cell_t lifeLogic(long i, long j, cell_t v, long alive) {
-  return lifeLogicM[v][alive];
-}
-
 void bodyThread(Matrix *m, long start, long end, long iterations, barrier *bar) {
   for (long k = 0; k < iterations; k++) {
     for (long i = start; i < end; i++) {
       for (long j = 0; j < m->getWidth(); j++) {
-    		m->set(i, j, lifeLogicM[m->get(i, j)][m->countAlive(i, j)]);
+    		m->set(i, j, Matrix::lifeLogic(m->get(i, j), m->countAlive(i, j));
     	}
     }	
     bar->await([&]{
@@ -54,7 +45,10 @@ void bodyThread(Matrix *m, long start, long end, long iterations, barrier *bar) 
 
 void bodySequential(Matrix *m, long iterations) {
   for (long k = 0; k < iterations; k++) {
-    m->forEach(lifeLogic);
+    m->forEach([](long i, long j, cell_t cell, long liveNeighbors){
+      return Matrix::lifeLogic(cell, liveNeighbors);
+    });
+    m->print();
   }
 }
 

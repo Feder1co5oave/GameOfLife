@@ -47,6 +47,11 @@ void Matrix::print() const {
   std::cout << std::endl;
 }
 
+cell_t _lifeLogic[2][9] = {
+  {0, 0, 0, 1, 0, 0, 0, 0, 0},
+  {0, 0, 1, 1, 0, 0, 0, 0, 0}
+};
+
 void Matrix::forEach(std::function<cell_t(long, long, cell_t, long)>f) {
   forEach(0, this->h, f);
 }
@@ -63,9 +68,9 @@ void Matrix::forEach(long start,
 }
 
 void Matrix::swap() {
-  this->tmp = this->read;
-  this->read  = this->write;
-  this->write = tmp;
+  tmp   = read;
+  read  = write;
+  write = tmp;
 }
 
 long Matrix::countAlive(long x, long y) const {
