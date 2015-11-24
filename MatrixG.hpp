@@ -15,6 +15,7 @@ public:
   MatrixG(long h, long w, bool random = false);
   void print() const;
   void set (long i, long j, cell_t v) override;
+  void updateRows(long start, long end);
 private:
   cv::Mat screen;
 };

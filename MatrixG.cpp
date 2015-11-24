@@ -30,3 +30,13 @@ void MatrixG::set(long i, long j, cell_t v){
     this->screen.at<cv::Vec3b>(cv::Point(j, i)) = cv::Vec3b(0,0,0);
   }
 }
+
+void MatrixG::updateRows(long start, long end) {
+  for (long i = start; i < end; i++) {
+    set(i, 0, lifeLogic(read[i][0], countAlive(i, 0)));
+    for (long j = 1, _w = w - 1; j < _w; j++) {
+      set(i, j, lifeLogic(read[i][j], dumbCountAlive(i, j)));
+    }
+    set(i, w-1, lifeLogic(read[i][w-1], countAlive(i, w-1)));
+  }
+}
