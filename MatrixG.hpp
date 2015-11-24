@@ -12,13 +12,9 @@ class MatrixG : public Matrix {
 
 public:
 
-  MatrixG(int h,
-          int w);
-  void  print() const override;
-  void set (int   i,
-                   int   j,
-                   unsigned short v) override;
-
+  MatrixG(long h, long w, bool random = false);
+  void print() const;
+  void set(long i, long j, cell_t v);
 private:
   cv::Mat screen;
 };

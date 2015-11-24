@@ -2,7 +2,7 @@
 #include <cmath>
 #include "MatrixG.hpp"
 
-MatrixG::MatrixG(int h, int w) : Matrix(h, w) {
+MatrixG::MatrixG(long h, long w) : Matrix(h, w) {
   this->screen = cv::Mat::zeros(h, w, CV_8UC3);
   cv::imshow("test", this->screen);
   cv::moveWindow("test", 0, 20);
@@ -10,11 +10,11 @@ MatrixG::MatrixG(int h, int w) : Matrix(h, w) {
 }
 
 void MatrixG::print() const{
-  // int h = this->h;
-  // int w = this->w;
+  // long h = this->h;
+  // long w = this->w;
   //
-  // for (int i = 0; i < h; i++) {
-  //   for (int j = 0; j < w; j++) {
+  // for (long i = 0; i < h; i++) {
+  //   for (long j = 0; j < w; j++) {
   //     if (this->read[i][j] == 1) {
   //       this->screen.at<cv::Vec3b>(cv::Point(i, j)) = cv::Vec3b(255, 255, 255);
   //     } else {
@@ -27,7 +27,7 @@ void MatrixG::print() const{
   cv::waitKey(1);
 }
 
-void MatrixG::set(int i, int j, unsigned short v){
+void MatrixG::set(long i, long j, cell_t v){
   Matrix::set(i,j,v);
   if (v==1){
     this->screen.at<cv::Vec3b>(cv::Point(j, i)) = cv::Vec3b(255, 255, 255);
