@@ -21,8 +21,8 @@ public:
     j = mod(j,w);
     return read[i][j];
   }
-  inline void set(long i, long j, cell_t v) {
-  	write[mod(i,h)][mod(j,w)] = v;
+  inline virtual void set(long i, long j, cell_t v) {
+    write[i][j] = v;
   }
   void swap();
 
