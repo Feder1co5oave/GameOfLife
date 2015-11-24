@@ -8,8 +8,10 @@ Matrix::Matrix(long h, long w, bool random) {
   srand(time(0));
   this->h     = h;
   this->w     = w;
-  this->read  = new cell_t *[h];
-  this->write = new cell_t *[h];
+  cell_t **rowsR = new cell_t *[h+2];
+  this->read  = rowsR + 1;
+  cell_t **rowsW = new cell_t *[h+2];
+  this->write = rowsW + 1;
 
   for (long i = 0; i < h; i++) {
     this->read[i]  = new cell_t[w];
@@ -26,6 +28,11 @@ Matrix::Matrix(long h, long w, bool random) {
       this->write[i][j] = 0;
     }
   }
+  // wrap-around
+  read[-1] = read[h-1];
+  read[h] = read[0];
+  write[-1] = write[h-1];
+  write[h] = write[0];
 }
 
 Matrix::~Matrix() {
@@ -33,8 +40,8 @@ Matrix::~Matrix() {
     delete[] this->read[i];
     delete[] this->write[i];
   }
-  delete[] this->read;
-  delete[] this->write;
+  delete[] (this->read - 1);
+  delete[] (this->write - 1);
 }
 
 void Matrix::print() const {
@@ -74,7 +81,13 @@ void Matrix::swap() {
 }
 
 long Matrix::countAlive(long x, long y) const {
-  return  get(x-1,y-1) + get(x-1,y) + get(x-1,y+1)
-         + get(x,  y-1)              + get(x,  y+1)
-         + get(x+1,y-1) + get(x+1,y) + get(x+1,y+1);
+  if (y == 0)
+    return  read[x-1][w-1] + read[x-1][ 0 ] + read[x-1][ 1 ]
+          + read[ x ][w-1]                  + read[ x ][ 1 ]
+          + read[x+1][w-1] + read[x+1][ 0 ] + read[x+1][ 1 ];
+  else if (y == w-1)
+    return  read[x-1][w-2] + read[x-1][w-1] + read[x-1][ 0 ]
+          + read[ x ][w-2]                  + read[ x ][ 0 ]
+          + read[x+1][w-2] + read[x+1][w-1] + read[x+1][ 0 ];
+  else return dumbCountAlive(x, y);
 }

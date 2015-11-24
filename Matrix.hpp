@@ -40,6 +40,12 @@ protected:
   cell_t **read, **write, **tmp;
   long     w, h;
 
+  inline long dumbCountAlive(long x, long y) const {
+    return read[x-1][y-1] + read[x-1][ y ] + read[x-1][y+1] +
+           read[ x ][y-1]                  + read[ x ][y+1] +
+           read[x+1][y-1] + read[x+1][ y ] + read[x+1][y+1];
+  }
+
 private:
   template<typename T>
   inline static T mod(T a, T b) {
