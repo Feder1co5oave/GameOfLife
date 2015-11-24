@@ -7,6 +7,10 @@ typedef unsigned char cell_t;
 
 extern cell_t _lifeLogic[][9];
 
+enum configuration {
+  GLIDER, BOTTLE, SCHICKENGINE, HAMMERHEAD
+};
+
 class Matrix {
   Matrix(Matrix const&)            = delete;
   Matrix& operator=(Matrix const&) = delete;
@@ -24,6 +28,7 @@ public:
   inline virtual void set(long i, long j, cell_t v) {
     write[i][j] = v;
   }
+  void draw(enum configuration conf, long x, long y);
   void swap();
 
   typedef std::function <cell_t(long, long, cell_t, long)> lambda;
@@ -41,6 +46,7 @@ protected:
   cell_t **read, **write, **tmp;
   long     w, h;
 
+  template <long W> void drawMatrix(cell_t model[][W], long H, long x, long Y);
   inline long dumbCountAlive(long x, long y) const {
     return read[x-1][y-1] + read[x-1][ y ] + read[x-1][y+1] +
            read[ x ][y-1]                  + read[ x ][y+1] +

@@ -2,6 +2,7 @@
 #include <functional>
 #include <cmath>
 #include "Matrix.hpp"
+#include "Patterns.cpp"
 
 
 Matrix::Matrix(long h, long w, bool random) {
@@ -101,4 +102,30 @@ long Matrix::countAlive(long x, long y) const {
           + read[ x ][w-2]                  + read[ x ][ 0 ]
           + read[x+1][w-2] + read[x+1][w-1] + read[x+1][ 0 ];
   else return dumbCountAlive(x, y);
+}
+
+void Matrix::draw(enum configuration conf, long x, long y) {
+  cell_t *model = NULL;
+  long H = -1, W = -1;
+  switch (conf) {
+    case GLIDER:
+      drawMatrix(glider, 5, x, y);
+      break;
+    case BOTTLE:
+      drawMatrix(bottle, 20, x, y);
+      break;
+    case SCHICKENGINE:
+      drawMatrix(schickengine, 13, x, y);
+      break;
+    case HAMMERHEAD:
+      drawMatrix(hammerhead, 18, x, y);
+      break;
+  }
+}
+
+template <long W>
+void Matrix::drawMatrix(cell_t model[][W], long H, long x, long y) {
+  for (long i = 0; i < H; i++)
+    for (long j = 0; j < W; j++)
+      set(x + i, y + j, model[i][j]);
 }
