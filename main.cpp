@@ -29,11 +29,7 @@ bool existArgument(int argc, char **argv, const std::string& option) {
 
 void bodyThread(Matrix *m, long start, long end, long iterations, barrier *bar) {
   for (long k = 0; k < iterations; k++) {
-    for (long i = start; i < end; i++) {
-      for (long j = 0; j < m->getWidth(); j++) {
-    		m->set(i, j, Matrix::lifeLogic(m->get(i, j), m->countAlive(i, j));
-    	}
-    }	
+    m->updateRows(start, end);
     bar->await([&]{
       m->swap();
 

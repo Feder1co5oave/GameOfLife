@@ -59,6 +59,17 @@ cell_t _lifeLogic[2][9] = {
   {0, 0, 1, 1, 0, 0, 0, 0, 0}
 };
 
+void Matrix::updateRows(long start, long end) {
+  for (long i = start; i < end; i++) {
+    for (long j = 1, _w = w - 1; j < _w; j++) {
+      write[i][j] = lifeLogic(read[i][j], dumbCountAlive(i, j));
+    }
+    // defer the read to the last cache block until the end of the row
+    write[i][0]   = lifeLogic(read[i][0],   countAlive(i, 0));
+    write[i][w-1] = lifeLogic(read[i][w-1], countAlive(i, w-1));
+  }
+}
+
 void Matrix::forEach(std::function<cell_t(long, long, cell_t, long)>f) {
   forEach(0, this->h, f);
 }
