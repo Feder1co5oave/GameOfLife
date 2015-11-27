@@ -13,10 +13,14 @@
 #if !EXTREME_TEST
 char* getArgument(int argc, char **argv, const std::string& option) {
   char **end  = argv + argc;
-  char **itOp = std::find(argv, end, option);
+  char **itOp = std::find(argv, end, string("--") + option);
 
   if ((itOp != end) && (++itOp != end)) return *itOp;
-  else return 0;
+  else {
+    itOp = std::find(argv, end, string("-") + option[0]);
+    if ((itOp != end) && (++itOp != end)) return *itOp;
+    else return 0;
+  }
 }
 
 bool existArgument(int argc, char **argv, const std::string& option) {
@@ -58,7 +62,7 @@ int main(int argc, char *argv[]) {
   #if !EXTREME_TEST
 
   if (existArgument(argc, argv, "--help") ||
-      existArgument(argc, argv, "-h")) {
+      existArgument(argc, argv, "-?")) {
     std::cout <<
       "--thread <number> \t number of threads, if 0 run the sequential version" <<
       std::endl;
@@ -70,16 +74,16 @@ int main(int argc, char *argv[]) {
   }
 
 
-  char *nwStr = getArgument(argc, argv, "--thread");
+  char *nwStr = getArgument(argc, argv, "thread");
   int   nw    = nwStr ? std::atoi(nwStr) : std::thread::hardware_concurrency();
 
-  char *hStr = getArgument(argc, argv, "--height");
+  char *hStr = getArgument(argc, argv, "height");
   int   h    = hStr ? std::atoi(hStr) : 1000;
 
-  char *wStr = getArgument(argc, argv, "--width");
+  char *wStr = getArgument(argc, argv, "width");
   int   w    = wStr ? std::atoi(wStr) : 1000;
 
-  char *sStr = getArgument(argc, argv, "--step");
+  char *sStr = getArgument(argc, argv, "step");
   int   s    = sStr ? std::atoi(sStr) : 1000;
   #else // if EXTREME_TEST
   int h  = atoi(argv[1]);
