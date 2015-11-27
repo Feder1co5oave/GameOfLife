@@ -8,7 +8,7 @@ typedef unsigned char cell_t;
 extern cell_t _lifeLogic[][9];
 
 enum configuration {
-  GLIDER, BOTTLE, SCHICKENGINE, HAMMERHEAD
+  GLIDER, BOTTLE, SCHICKENGINE, HAMMERHEAD, GOSPERSGUN
 };
 
 class Matrix {

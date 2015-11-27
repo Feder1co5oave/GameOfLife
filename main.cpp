@@ -90,10 +90,10 @@ int main(int argc, char *argv[]) {
 
   #if GRAPHIC && !EXTREME_TEST
   MatrixG m(h, w);
-  for (long p = 0; p < w-20; p += 30)
-    for (long q = 0; q < h-25; q += 40)
+  for (long p = 0; p < w; p += 50)
+    //for (long q = 0; q < h-25; q += 40)
       //m.draw(GLIDER, p, q+p);
-      m.draw(HAMMERHEAD, p, q);
+      m.draw(GOSPERSGUN, p, 20);
   m.swap();
   #else // if !GRAPHIC
   Matrix m(h, w, true);

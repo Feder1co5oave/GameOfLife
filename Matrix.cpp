@@ -120,6 +120,8 @@ void Matrix::draw(enum configuration conf, long x, long y) {
     case HAMMERHEAD:
       drawMatrix(hammerhead, 18, x, y);
       break;
+    case GOSPERSGUN:
+      drawMatrix(gospersgun, 11, x, y);
   }
 }
 
