@@ -3,12 +3,17 @@
 #include <functional>
 #include <chrono>
 #include <thread>
+#include <sched.h>
+#include <unistd.h>
 #include <vector>
+#include <memory>
 #include "Matrix.hpp"
 #include "Barrier.hpp"
 #ifdef GRAPHIC
   #include "MatrixG.hpp"
 #endif
+
+using namespace std;
 
 #if !EXTREME_TEST
 char* getArgument(int argc, char **argv, const std::string& option) {
@@ -47,6 +52,8 @@ void bodyThread(Matrix *m, long start, long end, long iterations, barrier *bar) 
       // cout << "step " << k << endl;
     });
   }
+  //cout << "thread " << start << " running on cpu " << sched_getcpu() << endl;
+  //cout << -sched_getcpu();
 }
 
 void bodySequential(Matrix *m, long iterations) {
@@ -59,6 +66,8 @@ void bodySequential(Matrix *m, long iterations) {
 }
 
 int main(int argc, char *argv[]) {
+  const int NPROCS = sysconf(_SC_NPROCESSORS_ONLN);
+
   #if !EXTREME_TEST
 
   if (existArgument(argc, argv, "--help") ||
@@ -75,7 +84,7 @@ int main(int argc, char *argv[]) {
 
 
   char *nwStr = getArgument(argc, argv, "thread");
-  int   nw    = nwStr ? std::atoi(nwStr) : std::thread::hardware_concurrency();
+  int   nw    = nwStr ? std::atoi(nwStr) : NPROCS;
 
   char *hStr = getArgument(argc, argv, "height");
   int   h    = hStr ? std::atoi(hStr) : 1000;
@@ -105,19 +114,32 @@ int main(int argc, char *argv[]) {
 
   if (nw != 0) {
     int nRow = (h / nw);
-    std::vector<std::thread> tid;
+    vector<unique_ptr<thread> > tid;
     barrier bar(nw);
+    cpu_set_t *cpuset = CPU_ALLOC(NPROCS);
+    size_t setsize = CPU_ALLOC_SIZE(NPROCS);
 
     for (long i = 0; i < nw; i++) {
+      CPU_ZERO_S(setsize, cpuset);
       long start = nRow * i;
       long end   = i != nw - 1 ? start + nRow : h;
 
       // std::cout << "thread" << i << " start: " << start << " end:" << end << std::endl;
+      auto th = unique_ptr<thread>(new thread(bodyThread, &m, start, end, s, &bar));
 
-      tid.push_back(std::thread(bodyThread, &m, start, end, s, &bar));
+      #ifdef __MIC__ // bind to different physical cores first
+      CPU_SET_S( (i*4 + 1 + (i*4)/NPROCS ) % NPROCS, setsize, cpuset);
+      //cerr << "bind to cpu#" << (i*4 + 1 + (i*4)/NPROCS ) % NPROCS << endl;
+      #else
+      CPU_SET_S(i % NPROCS, setsize, cpuset);
+      #endif
+      pthread_setaffinity_np(th->native_handle(), setsize, cpuset);
+      tid.push_back(move(th));
     }
 
-    for (long i = 0; i < nw; i++) tid[i].join();
+    for (long i = 0; i < nw; i++) tid[i]->join();
+
+    CPU_FREE(cpuset);
   } else {
     bodySequential(&m, s);
   }
