@@ -4,8 +4,8 @@
 
 MatrixG::MatrixG(long h, long w, bool random) : Matrix(h, w, random) {
   this->screen = cv::Mat::zeros(h, w, CV_8UC3);
-  cv::imshow("test", this->screen);
-  cv::moveWindow("test", 0, 20);
+  cv::imshow("Game of Life", this->screen);
+  cv::moveWindow("Game of Life", 0, 20);
   cv::waitKey(1);
   if (random) {
     for (long i = 0; i < h; i++)
@@ -17,7 +17,7 @@ MatrixG::MatrixG(long h, long w, bool random) : Matrix(h, w, random) {
 }
 
 void MatrixG::print() const{
-  cv::imshow("test", this->screen);
+  cv::imshow("Game of Life", this->screen);
   cv::waitKey(1);
 }
 
