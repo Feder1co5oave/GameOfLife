@@ -13,10 +13,12 @@ Matrix::Matrix(long h, long w, bool random) {
   this->read  = rowsR + 1;
   cell_t **rowsW = new cell_t *[h+2];
   this->write = rowsW + 1;
+  this->read[0] = new cell_t[w*h];
+  this->write[0] = new cell_t[w*h];
 
-  for (long i = 0; i < h; i++) {
-    this->read[i]  = new cell_t[w];
-    this->write[i] = new cell_t[w];
+  for (long i = 1; i < h; i++) {
+    this->read[i]  = this->read[i-1] + w;
+    this->write[i] = this->write[i-1] + w;
 
     if (random)
     for (long j = 0; j < w; j++) {
@@ -37,10 +39,8 @@ Matrix::Matrix(long h, long w, bool random) {
 }
 
 Matrix::~Matrix() {
-  for (long i = 0; i < h; i++) {
-    delete[] this->read[i];
-    delete[] this->write[i];
-  }
+  delete[] this->read[0];
+  delete[] this->write[0];
   delete[] (this->read - 1);
   delete[] (this->write - 1);
 }
