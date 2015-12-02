@@ -34,7 +34,18 @@ public:
   typedef std::function <cell_t(long, long, cell_t, long)> lambda;
   void forEach(lambda f);
   void forEach(long start, long end, lambda f);
-  long countAlive(long x, long y) const;
+
+  inline long countAlive(long x, long y) const {
+    if (y == 0)
+      return  read[x-1][w-1] + read[x-1][ 0 ] + read[x-1][ 1 ]
+            + read[ x ][w-1]                  + read[ x ][ 1 ]
+            + read[x+1][w-1] + read[x+1][ 0 ] + read[x+1][ 1 ];
+    else if (y == w-1)
+      return  read[x-1][w-2] + read[x-1][w-1] + read[x-1][ 0 ]
+            + read[ x ][w-2]                  + read[ x ][ 0 ]
+            + read[x+1][w-2] + read[x+1][w-1] + read[x+1][ 0 ];
+    else return dumbCountAlive(x, y);
+  }
   void updateRows(long start, long end);
 
   inline static cell_t lifeLogic(cell_t cell, long liveNeighbors) {

@@ -92,18 +92,6 @@ void Matrix::swap() {
   write = tmp;
 }
 
-long Matrix::countAlive(long x, long y) const {
-  if (y == 0)
-    return  read[x-1][w-1] + read[x-1][ 0 ] + read[x-1][ 1 ]
-          + read[ x ][w-1]                  + read[ x ][ 1 ]
-          + read[x+1][w-1] + read[x+1][ 0 ] + read[x+1][ 1 ];
-  else if (y == w-1)
-    return  read[x-1][w-2] + read[x-1][w-1] + read[x-1][ 0 ]
-          + read[ x ][w-2]                  + read[ x ][ 0 ]
-          + read[x+1][w-2] + read[x+1][w-1] + read[x+1][ 0 ];
-  else return dumbCountAlive(x, y);
-}
-
 void Matrix::draw(enum configuration conf, long x, long y) {
   cell_t *model = NULL;
   long H = -1, W = -1;
