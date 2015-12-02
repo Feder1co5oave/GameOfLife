@@ -53,7 +53,8 @@ void bodyThread(Matrix *m, long start, long end, long iterations, barrier *bar) 
     });
   }
   //cout << "thread " << start << " running on cpu " << sched_getcpu() << endl;
-  //cout << -sched_getcpu();
+  //usleep(rand() % 1000000);
+  //cerr << -sched_getcpu();
 }
 
 void bodySequential(Matrix *m, long iterations) {
@@ -120,20 +121,26 @@ int main(int argc, char *argv[]) {
     size_t setsize = CPU_ALLOC_SIZE(NPROCS);
 
     for (long i = 0; i < nw; i++) {
-      CPU_ZERO_S(setsize, cpuset);
       long start = nRow * i;
       long end   = i != nw - 1 ? start + nRow : h;
+      int cpu;
 
       // std::cout << "thread" << i << " start: " << start << " end:" << end << std::endl;
       auto th = unique_ptr<thread>(new thread(bodyThread, &m, start, end, s, &bar));
 
       #ifdef __MIC__ // bind to different physical cores first
-      CPU_SET_S( (i*4 + 1 + (i*4)/NPROCS ) % NPROCS, setsize, cpuset);
-      //cerr << "bind to cpu#" << (i*4 + 1 + (i*4)/NPROCS ) % NPROCS << endl;
+      cpu = (i*4 + 1 + (i*4)/NPROCS ) % NPROCS;
       #else
-      CPU_SET_S(i % NPROCS, setsize, cpuset);
+      cpu = i % NPROCS;
       #endif
+
+      #ifdef SETAFFINITY
+      CPU_ZERO_S(setsize, cpuset);
+      CPU_SET_S(cpu, setsize, cpuset);
       pthread_setaffinity_np(th->native_handle(), setsize, cpuset);
+      //cerr << "bind to cpu#" << cpu << endl;
+      #endif
+
       tid.push_back(move(th));
     }
 

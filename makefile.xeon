@@ -7,7 +7,7 @@ CXXFLAGS = -std=c++11 -pthread -O3 -finline-functions
 all_build: build main.out
 
 main.out: main.cpp build/Matrix.o build/Barrier.o
-	$(CXX) $^ $(CXXFLAGS) -DNO_OPENCV -DEXTREME_TEST -o $@
+	$(CXX) $^ $(CXXFLAGS) -DNO_OPENCV -DEXTREME_TEST -DSETAFFINITY -o $@
 
 build/%.o: %.cpp %.hpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
