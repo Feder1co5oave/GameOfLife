@@ -26,6 +26,7 @@ Matrix::Matrix(long h, long w, bool random) {
       this->write[i][j] = 0;
     }
     else
+    #pragma ivdep
     for (long j = 0; j < w; j++) {
       this->read[i][j] = 0;
       this->write[i][j] = 0;
@@ -62,6 +63,7 @@ cell_t _lifeLogic[2][9] = {
 
 void Matrix::updateRows(long start, long end) {
   for (long i = start; i < end; i++) {
+    #pragma ivdep
     for (long j = 1, _w = w - 1; j < _w; j++) {
       write[i][j] = lifeLogic(read[i][j], dumbCountAlive(i, j));
     }
@@ -75,8 +77,8 @@ void Matrix::forEach(std::function<cell_t(long, long, cell_t, long)>f) {
   forEach(0, this->h, f);
 }
 
-void Matrix::forEach(long start,
-                     long end,
+void Matrix::forEach(const long start,
+                     const long end,
                      std::function<cell_t(long, long, cell_t, long)> f) {
   for (long i = start; i < end; i++) {
     for (long j = 0; j < w; j++) {
