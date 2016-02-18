@@ -1,12 +1,10 @@
-#include <iostream>
-#include <algorithm>
-#include <functional>
+
 #include <chrono>
 #include <thread>
 #include <sched.h>
 #include <unistd.h>
 #include <vector>
-#include <memory>
+#include "usage.hpp"
 #include "Matrix.hpp"
 #include "Barrier.hpp"
 #ifdef GRAPHIC
@@ -14,27 +12,6 @@
 #endif
 
 using namespace std;
-
-#if !EXTREME_TEST
-char* getArgument(int argc, char **argv, const std::string& option) {
-  char **end  = argv + argc;
-  char **itOp = std::find(argv, end, string("--") + option);
-
-  if ((itOp != end) && (++itOp != end)) return *itOp;
-  else {
-    itOp = std::find(argv, end, string("-") + option[0]);
-    if ((itOp != end) && (++itOp != end)) return *itOp;
-    else return 0;
-  }
-}
-
-bool existArgument(int argc, char **argv, const std::string& option) {
-  char **end = argv + argc;
-
-  return std::find(argv, end, option) != end;
-}
-
-#endif // if !EXTREME_TEST
 
 #ifdef GRAPHIC
 void bodyThread(MatrixG *m, long start, long end, long iterations, barrier *bar) {
@@ -66,67 +43,40 @@ void bodySequential(Matrix *m, long iterations) {
   }
 }
 
+
 int main(int argc, char *argv[]) {
   const int NPROCS = sysconf(_SC_NPROCESSORS_ONLN);
 
-  #if !EXTREME_TEST
-
-  if (existArgument(argc, argv, "--help") ||
-      existArgument(argc, argv, "-?")) {
-    std::cout <<
-      "--thread <number> \t number of threads, if 0 run the sequential version" <<
-      std::endl;
-    std::cout << "--height <number> \t height of the matrix" << std::endl;
-    std::cout << "--width <number> \t width of the matrix" << std::endl;
-    std::cout << "--step <number> \t number of step, if 0 run forever" << std::endl;
-    std::cout << "--help or -h \t\t this help" << std::endl;
+  if (existArgument(argc, argv, "--help") || existArgument(argc, argv, "-h")) {
+    show_usage();
     return 0;
   }
 
+  gol_run run = parse_arguments(argc, argv, NPROCS);
 
-  char *nwStr = getArgument(argc, argv, "thread");
-  int   nw    = nwStr ? std::atoi(nwStr) : NPROCS;
-
-  char *hStr = getArgument(argc, argv, "height");
-  int   h    = hStr ? std::atoi(hStr) : 1000;
-
-  char *wStr = getArgument(argc, argv, "width");
-  int   w    = wStr ? std::atoi(wStr) : 1000;
-
-  char *sStr = getArgument(argc, argv, "step");
-  int   s    = sStr ? std::atoi(sStr) : 1000;
-  #else // if EXTREME_TEST
-  int h  = atoi(argv[1]);
-  int w  = atoi(argv[1]);
-  int s  = atoi(argv[2]);
-  int nw = atoi(argv[3]);
-  #endif // if EXTREME_TEST
-
-  #if GRAPHIC && !EXTREME_TEST
-  MatrixG m(h, w);
-  for (long p = 0; p < w; p += 50)
-    //for (long q = 0; q < h-25; q += 40)
-      //m.draw(GLIDER, p, q+p);
-      m.draw(GOSPERSGUN, p, 20);
+  #if GRAPHIC
+  MatrixG m(run.height, run.width);
+  for (long p = 0; p < run.width; p += 50) m.draw(GOSPERSGUN, p, 20);
+  //for (long q = 0; q < run.height-25; q += 40) m.draw(GLIDER, p, q+p);
   m.swap();
   #else // if !GRAPHIC
-  Matrix m(h, w, true);
+  Matrix m(run.height, run.width, true);
   #endif
 
-  if (nw != 0) {
-    int nRow = (h / nw);
+  if (run.workers != 0) {
+    int nRow = (run.height / run.workers);
     vector<unique_ptr<thread> > tid;
-    barrier bar(nw);
+    barrier bar(run.workers);
     cpu_set_t *cpuset = CPU_ALLOC(NPROCS);
     size_t setsize = CPU_ALLOC_SIZE(NPROCS);
 
-    for (long i = 0; i < nw; i++) {
+    for (long i = 0; i < run.workers; i++) {
       long start = nRow * i;
-      long end   = i != nw - 1 ? start + nRow : h;
+      long end   = i != run.workers - 1 ? start + nRow : run.height;
       int cpu;
 
       // std::cout << "thread" << i << " start: " << start << " end:" << end << std::endl;
-      auto th = unique_ptr<thread>(new thread(bodyThread, &m, start, end, s, &bar));
+      auto th = unique_ptr<thread>(new thread(bodyThread, &m, start, end, run.steps, &bar));
 
       #ifdef __MIC__ // bind to different physical cores first
       cpu = (i*4 + 1 + (i*4)/NPROCS ) % NPROCS;
@@ -144,11 +94,10 @@ int main(int argc, char *argv[]) {
       tid.push_back(move(th));
     }
 
-    for (long i = 0; i < nw; i++) tid[i]->join();
-
+    for (long i = 0; i < run.workers; i++) tid[i]->join();
     CPU_FREE(cpuset);
   } else {
-    bodySequential(&m, s);
+    bodySequential(&m, run.steps);
   }
 
   return 0;
