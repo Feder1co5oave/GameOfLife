@@ -1,13 +1,18 @@
+FF_ROOT = /home/spm1501/fastflow
+FASTFLOW = -I$(FF_ROOT)
 CXX = icc
 CXXFLAGS = -std=c++11 -pthread -O3 #-qopt-report=5 -qopt-report-phase=vec
 
 
 .PHONY: all build clean
 
-all: build main.out
+all: build main.out main.ff.out
 
 main.out: main.cpp build/Matrix.o build/Barrier.o
 	$(CXX) $^ $(CXXFLAGS) -DEXTREME_TEST -DSETAFFINITY -o $@
+
+main.ff.out: main_ff.cpp build/Matrix.o
+	$(CXX) $^ $(CXXFLAGS) $(FASTFLOW) -DEXTREME_TEST -o $@
 
 build/%.o: %.cpp %.hpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
