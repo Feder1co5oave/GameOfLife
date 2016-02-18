@@ -23,12 +23,8 @@ void MatrixG::print() const {
 
 void MatrixG::set(long i, long j, cell_t v){
   Matrix::set(i,j,v);
-  if (v==1){
-    this->screen.at<cv::Vec3b>(cv::Point(j, i)) = cv::Vec3b(255, 255, 255);
-  }
-  if (v==0){
-    this->screen.at<cv::Vec3b>(cv::Point(j, i)) = cv::Vec3b(0,0,0);
-  }
+  unsigned char c = (~v) + 1;
+  this->screen.at<cv::Vec3b>(cv::Point(j, i)) = cv::Vec3b(c, c, c);
 }
 
 void MatrixG::updateRows(long start, long end) {
