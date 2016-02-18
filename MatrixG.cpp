@@ -16,7 +16,7 @@ MatrixG::MatrixG(long h, long w, bool random) : Matrix(h, w, random) {
   }
 }
 
-void MatrixG::print() const{
+void MatrixG::print() const {
   cv::imshow("Game of Life", this->screen);
   cv::waitKey(1);
 }

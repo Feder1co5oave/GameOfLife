@@ -15,24 +15,26 @@ using namespace std;
 
 #ifdef GRAPHIC
 void bodyThread(MatrixG *m, long start, long end, long iterations, barrier *bar) {
-#else
-void bodyThread(Matrix *m, long start, long end, long iterations, barrier *bar) {
-#endif
   for (long k = 0; k < iterations; k++) {
     m->updateRows(start, end);
     bar->await([&]{
       m->swap();
-
-      #ifdef GRAPHIC
       m->print();
-      #endif
-      // cout << "step " << k << endl;
     });
   }
-  //cout << "thread " << start << " running on cpu " << sched_getcpu() << endl;
+}
+#else
+void bodyThread(Matrix *m, long start, long end, long iterations, barrier *bar) {
+  for (long k = 0; k < iterations; k++) {
+    m->updateRows(start, end);
+    bar->await([&]{
+      m->swap();
+    });
+  }
   //usleep(rand() % 1000000);
   //cerr << -sched_getcpu();
 }
+#endif
 
 void bodySequential(Matrix *m, long iterations) {
   for (long k = 0; k < iterations; k++) {
@@ -75,7 +77,6 @@ int main(int argc, char *argv[]) {
       long end   = i != run.workers - 1 ? start + nRow : run.height;
       int cpu;
 
-      // std::cout << "thread" << i << " start: " << start << " end:" << end << std::endl;
       auto th = unique_ptr<thread>(new thread(bodyThread, &m, start, end, run.steps, &bar));
 
       #ifdef __MIC__ // bind to different physical cores first
@@ -88,7 +89,6 @@ int main(int argc, char *argv[]) {
       CPU_ZERO_S(setsize, cpuset);
       CPU_SET_S(cpu, setsize, cpuset);
       pthread_setaffinity_np(th->native_handle(), setsize, cpuset);
-      //cerr << "bind to cpu#" << cpu << endl;
       #endif
 
       tid.push_back(move(th));
@@ -96,6 +96,7 @@ int main(int argc, char *argv[]) {
 
     for (long i = 0; i < run.workers; i++) tid[i]->join();
     CPU_FREE(cpuset);
+
   } else {
     bodySequential(&m, run.steps);
   }
