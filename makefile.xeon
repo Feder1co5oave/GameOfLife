@@ -2,12 +2,12 @@ CXX = icc
 CXXFLAGS = -std=c++11 -pthread -O3 #-qopt-report=5 -qopt-report-phase=vec
 
 
-.PHONY: all_build build clean
+.PHONY: all build clean
 
-all_build: build main.out
+all: build main.out
 
 main.out: main.cpp build/Matrix.o build/Barrier.o
-	$(CXX) $^ $(CXXFLAGS) -DNO_OPENCV -DEXTREME_TEST -DSETAFFINITY -o $@
+	$(CXX) $^ $(CXXFLAGS) -DEXTREME_TEST -DSETAFFINITY -o $@
 
 build/%.o: %.cpp %.hpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<

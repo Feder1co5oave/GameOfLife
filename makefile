@@ -2,9 +2,9 @@ OPENCV = `pkg-config --cflags --libs opencv`
 CXX = g++
 CXXFLAGS = -std=c++11 -pthread -O3
 
-.PHONY: all_build build clean
+.PHONY: all build clean
 
-all_build: build main.out main.x.out
+all: build main.out main.x.out
 
 main.out: main.cpp build/Matrix.o build/Barrier.o
 	$(CXX) $^ $(CXXFLAGS) -DSETAFFINITY -o $@
