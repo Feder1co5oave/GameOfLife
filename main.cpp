@@ -6,7 +6,7 @@
 #include <vector>
 #include "usage.hpp"
 #include "Matrix.hpp"
-#include "Barrier.hpp"
+#include "Barrier_atomic.hpp"
 #ifdef GRAPHIC
   #include "MatrixG.hpp"
 #endif
@@ -17,19 +17,14 @@ using namespace std;
 void bodyThread(MatrixG *m, long start, long end, long iterations, barrier *bar) {
   for (long k = 0; k < iterations; k++) {
     m->updateRows(start, end);
-    bar->await([&]{
-      m->swap();
-      m->print();
-    });
+    bar->await();
   }
 }
 #else
 void bodyThread(Matrix *m, long start, long end, long iterations, barrier *bar) {
   for (long k = 0; k < iterations; k++) {
     m->updateRows(start, end);
-    bar->await([&]{
-      m->swap();
-    });
+    bar->await();
   }
   //usleep(rand() % 1000000);
   //cerr << -sched_getcpu();
@@ -49,7 +44,7 @@ void bodySequential(Matrix *m, long iterations) {
 int main(int argc, char *argv[]) {
   const int NPROCS = sysconf(_SC_NPROCESSORS_ONLN);
 
-  if (existArgument(argc, argv, "--help") || existArgument(argc, argv, "-h")) {
+  if (existArgument(argc, argv, "--help") || existArgument(argc, argv, "-?")) {
     show_usage(argv);
     return 0;
   }
@@ -68,7 +63,12 @@ int main(int argc, char *argv[]) {
   if (run.workers != 0) {
     int nRow = (run.height / run.workers);
     vector<unique_ptr<thread> > tid;
-    barrier bar(run.workers);
+    barrier bar(run.workers, [&m](int) {
+      m.swap();
+      #ifdef GRAPHIC
+      m.print();
+      #endif
+    });
     cpu_set_t *cpuset = CPU_ALLOC(NPROCS);
     size_t setsize = CPU_ALLOC_SIZE(NPROCS);
 
