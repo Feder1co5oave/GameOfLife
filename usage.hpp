@@ -33,7 +33,7 @@ void show_usage(char **argv) {
   std::cout << "  --height | -h <number>  height of the matrix" << std::endl;
   std::cout << "  --width  | -w <number>  width of the matrix" << std::endl;
   std::cout << "  --step   | -s <number>  number of step, if 0 run forever" << std::endl;
-  std::cout << "  --help or -h            this help" << std::endl;
+  std::cout << "  --help or -?            this help" << std::endl;
   #endif
 }
 

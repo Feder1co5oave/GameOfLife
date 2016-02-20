@@ -49,7 +49,7 @@ void bodySequential(Matrix *m, long iterations) {
 int main(int argc, char *argv[]) {
   const int NPROCS = sysconf(_SC_NPROCESSORS_ONLN);
 
-  if (existArgument(argc, argv, "--help") || existArgument(argc, argv, "-h")) {
+  if (existArgument(argc, argv, "--help") || existArgument(argc, argv, "-?")) {
     show_usage(argv);
     return 0;
   }
