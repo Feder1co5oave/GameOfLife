@@ -6,7 +6,6 @@
 
 
 Matrix::Matrix(long h, long w, bool random) {
-  srand(time(0));
   this->h     = h;
   this->w     = w;
   cell_t **rowsR = new cell_t *[h+2];
@@ -20,18 +19,15 @@ Matrix::Matrix(long h, long w, bool random) {
     this->read[i]  = this->read[i-1] + w;
     this->write[i] = this->write[i-1] + w;
 
-    if (random)
-    for (long j = 0; j < w; j++) {
-      this->read[i][j] = rand() % 2;
-      this->write[i][j] = 0;
-    }
-    else
     #pragma ivdep
     for (long j = 0; j < w; j++) {
       this->read[i][j] = 0;
       this->write[i][j] = 0;
     }
   }
+
+  if (random) randomizeRows(0, h);
+
   // wrap-around
   read[-1] = read[h-1];
   read[h] = read[0];
@@ -70,6 +66,22 @@ void Matrix::updateRows(long start, long end) {
     // defer the read to the last cache block until the end of the row
     write[i][0]   = lifeLogic(read[i][0],   countAlive(i, 0));
     write[i][w-1] = lifeLogic(read[i][w-1], countAlive(i, w-1));
+  }
+}
+
+void Matrix::randomizeRows(long start, long end, drand48_data *state) {
+  drand48_data state_;
+  long int random;
+  if (state == nullptr) {
+    srand48_r(start ^ time(NULL) ^ end, &state_);
+    state = &state_;
+  }
+  
+  for (long i = start; i < end; i++) {
+    for (long j = 0; j < w; j++) {
+      lrand48_r(state, &random);
+      this->read[i][j] = random % 2;
+    }
   }
 }
 

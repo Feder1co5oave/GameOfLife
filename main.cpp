@@ -15,6 +15,7 @@ using namespace std;
 
 #ifdef GRAPHIC
 void bodyThread(MatrixG *m, long start, long end, long iterations, barrier *bar) {
+  m->randomizeRows(start, end);
   for (long k = 0; k < iterations; k++) {
     m->updateRows(start, end);
     bar->await([&]{
@@ -25,6 +26,7 @@ void bodyThread(MatrixG *m, long start, long end, long iterations, barrier *bar)
 }
 #else
 void bodyThread(Matrix *m, long start, long end, long iterations, barrier *bar) {
+  m->randomizeRows(start, end);
   for (long k = 0; k < iterations; k++) {
     m->updateRows(start, end);
     bar->await([&]{
@@ -57,12 +59,12 @@ int main(int argc, char *argv[]) {
   gol_run run = parse_arguments(argc, argv, NPROCS);
 
   #if GRAPHIC
-  MatrixG m(run.height, run.width);
-  for (long p = 0; p < run.width; p += 50) m.draw(GOSPERSGUN, p, 20);
+  MatrixG m(run.height, run.width, false);
+  //for (long p = 0; p < run.width; p += 50) m.draw(GOSPERSGUN, p, 20);
   //for (long q = 0; q < run.height-25; q += 40) m.draw(GLIDER, p, q+p);
-  m.swap();
+  //m.swap();
   #else // if !GRAPHIC
-  Matrix m(run.height, run.width, true);
+  Matrix m(run.height, run.width, false);
   #endif
 
   if (run.workers != 0) {
