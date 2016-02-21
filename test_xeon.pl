@@ -1,11 +1,11 @@
 #!/bin/perl -w
 use constant N => 5;
-my $SIZE = 2000;
+my $SIZE = 4096;
 my $STEP = 1000;
 my @json = ();
 
 print "[\n";
-foreach my $p (1,2,4,6,8,10,12,14,16,18,20,25,30,40) {
+foreach my $p (1,2,4,6,8,10,12,14,16,18,20,25,30) {
   my $sum=0;
   my @timings = ();
   
