@@ -6,7 +6,7 @@ CXXFLAGS = -std=c++11 -pthread -O3
 
 .PHONY: all build clean
 
-all: build main.out main.x.out main.ff.out
+all: build main.out main.x.out main.ff.out main.seq.out
 
 main.out: main.cpp build/Matrix.o build/Barrier.o
 	$(CXX) $^ $(CXXFLAGS) -DSETAFFINITY -o $@
@@ -16,6 +16,9 @@ main.x.out: main.cpp build/Matrix.o build/MatrixG.o build/Barrier.o
 
 main.ff.out: main_ff.cpp build/Matrix.o
 	$(CXX) $^ $(CXXFLAGS) $(FASTFLOW) -o $@
+
+main.seq.out: main_seq.cpp build/Matrix.o
+	$(CXX) $^ $(CXXFLAGS) -o $@
 
 build/%.o: %.cpp %.hpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
