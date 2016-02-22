@@ -27,14 +27,14 @@ bool existArgument(int argc, char **argv, const std::string& option) {
 
 void show_usage(char **argv) {
   #ifdef EXTREME_TEST
-  std::cout << argv[0] << " <size> <steps> <threads>" << std::endl;
+  std::cout << "Usage: " << argv[0] << " <size> <steps> <threads>" << std::endl;
   #else
-  std::cout << argv[0] << " [<params>]\nWhere <params> are:" << std::endl ;
+  std::cout << "Usage: " << argv[0] << " [<params>]\nWhere <params> are:" << std::endl ;
   std::cout << "  --thread | -t <number>  number of threads, if 0 run the sequential version" << std::endl;
   std::cout << "  --height | -h <number>  height of the matrix" << std::endl;
   std::cout << "  --width  | -w <number>  width of the matrix" << std::endl;
   std::cout << "  --step   | -s <number>  number of step, if 0 run forever" << std::endl;
-  std::cout << "  --help or -?            this help" << std::endl;
+  std::cout << "  --help   | -?           print this help" << std::endl;
   #endif
 }
 
@@ -43,10 +43,14 @@ gol_run parse_arguments(int argc, char **argv, const long NCPUS) {
   
   #ifdef EXTREME_TEST
   
-  run.height  = std::atoi(argv[1]);
-  run.width   = std::atoi(argv[1]);
-  run.steps   = std::atoi(argv[2]);
-  run.workers = std::atoi(argv[3]);
+  if (argc < 4) {
+    show_usage(argv);
+    exit(EXIT_FAILURE);
+  }
+
+  if (argc > 1) run.height = run.width = std::atoi(argv[1]);
+  if (argc > 2) run.steps = std::atoi(argv[2]);
+  if (argc > 3) run.workers = std::atoi(argv[3]);
   
   #else
 
