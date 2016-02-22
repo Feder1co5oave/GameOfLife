@@ -1,5 +1,4 @@
 #include "usage.hpp"
-#include "Matrix.hpp"
 
 #ifdef __MIC__
 	#define NO_DEFAULT_MAPPING

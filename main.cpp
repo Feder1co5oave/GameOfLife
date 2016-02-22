@@ -1,11 +1,9 @@
-
 #include <chrono>
 #include <thread>
 #include <sched.h>
 #include <unistd.h>
 #include <vector>
 #include "usage.hpp"
-#include "Matrix.hpp"
 #include "Barrier.hpp"
 #ifdef GRAPHIC
 	#include "MatrixG.hpp"
@@ -14,9 +12,9 @@
 using namespace std;
 
 #ifdef GRAPHIC
-void bodyThread(MatrixG *m, long start, long end, long iterations, barrier *bar) {
-	m->randomizeRows(start, end);
-	for (long k = 0; k < iterations; k++) {
+void bodyThread(MatrixG *m, long start, long end, const gol_run *run, barrier *bar) {
+	if (!run->configurations) m->randomizeRows(start, end);
+	for (long k = 0; k < run->steps; k++) {
 		m->updateRows(start, end);
 		bar->await([&]{
 			m->swap();
@@ -25,12 +23,15 @@ void bodyThread(MatrixG *m, long start, long end, long iterations, barrier *bar)
 	}
 }
 #else
-void bodyThread(Matrix *m, long start, long end, long iterations, barrier *bar) {
-	m->randomizeRows(start, end);
-	for (long k = 0; k < iterations; k++) {
+void bodyThread(Matrix *m, long start, long end, const gol_run *run, barrier *bar) {
+	if (!run->configurations) m->randomizeRows(start, end);
+	for (long k = 0; k < run->steps; k++) {
 		m->updateRows(start, end);
 		bar->await([&]{
 			m->swap();
+			#ifdef PRINT
+			m->print();
+			#endif
 		});
 	}
 	//usleep(rand() % 1000000);
@@ -56,6 +57,8 @@ int main(int argc, char *argv[]) {
 	#else // if !GRAPHIC
 	Matrix m(run.height, run.width, false);
 	#endif
+	
+	m.drawConfigurations(run.configurations);
 
 	int nRow = (run.height / run.workers);
 	vector<unique_ptr<thread> > tid;
@@ -68,7 +71,7 @@ int main(int argc, char *argv[]) {
 		long end   = i != run.workers - 1 ? start + nRow : run.height;
 		int cpu;
 
-		auto th = unique_ptr<thread>(new thread(bodyThread, &m, start, end, run.steps, &bar));
+		auto th = unique_ptr<thread>(new thread(bodyThread, &m, start, end, &run, &bar));
 
 		#ifdef __MIC__ // bind to different physical cores first
 		cpu = (i*4 + 1 + (i*4)/NPROCS ) % NPROCS;

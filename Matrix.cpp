@@ -110,6 +110,20 @@ void Matrix::draw(enum configuration conf, long x, long y) {
 	}
 }
 
+void Matrix::drawConfigurations(long conf) {
+	if (conf & GLIDER)
+		for (long p = 0; p < h-5; p += 30) draw(GLIDER, p, p);
+	if ((conf & BOTTLE) && h > 140)
+		for (long p = 40; p < w-40; p += 60) draw(BOTTLE, 100, p);
+	if ((conf & SCHICKENGINE) && w > 40)
+		for (long p = 10; p < h-20; p += 30) draw(SCHICKENGINE, p, w-30);
+	if ((conf & HAMMERHEAD) && h > 40)
+		for (long p = 10; p < w-30; p += 50) draw(HAMMERHEAD, h-25, p);
+	if ((conf & GOSPERSGUN) && w > 40)
+		for (long p = 0; p < h-11; p += 50) draw(GOSPERSGUN, p, 40);
+	swap();
+}
+
 template <long W>
 void Matrix::drawMatrix(cell_t model[][W], long H, long x, long y) {
 	for (long i = 0; i < H; i++)

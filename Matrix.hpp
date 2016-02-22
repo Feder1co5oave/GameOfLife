@@ -7,9 +7,6 @@ typedef unsigned char cell_t;
 
 extern cell_t _lifeLogic[][9];
 
-enum configuration {
-	GLIDER, BOTTLE, SCHICKENGINE, HAMMERHEAD, GOSPERSGUN
-};
 
 class Matrix {
 
@@ -26,7 +23,6 @@ public:
 	void print() const;
 	virtual void set(long i, long j, cell_t v) { write[i][j] = v; }
 	cell_t get(long i, long j) { return read[i][j]; }
-	void draw(enum configuration conf, long x, long y);
 	void swap();	
 	void updateRows(long start, long end);
 	virtual void randomizeRows(long start, long end, drand48_data *state = nullptr);
@@ -42,10 +38,21 @@ public:
 			     + read[x+1][w-2] + read[x+1][w-1] + read[x+1][ 0 ];
 		else return dumbCountAlive(x, y);
 	}
-
+	
 	inline static cell_t lifeLogic(cell_t cell, long liveNeighbors) {
 		return _lifeLogic[cell][liveNeighbors];
 	}
+
+	enum configuration {
+		GLIDER = 1,
+		BOTTLE = 2,
+		SCHICKENGINE = 4,
+		HAMMERHEAD = 8,
+		GOSPERSGUN = 16
+	};
+	
+	void draw(enum configuration conf, long x, long y);
+	void drawConfigurations(long conf);
 
 protected:
 	template <long W> void drawMatrix(cell_t model[][W], long H, long x, long Y);
