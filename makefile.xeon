@@ -14,6 +14,9 @@ main.out: main.cpp build/Matrix.o build/Barrier.o
 main.ff.out: main_ff.cpp build/Matrix.o
 	$(CXX) $^ $(CXXFLAGS) $(FASTFLOW) -DEXTREME_TEST -o $@
 
+main.seq.out: main_seq.cpp build/Matrix.o
+	$(CXX) $^ $(CXXFLAGS) -DEXTREME_TEST -o $@
+
 build/%.o: %.cpp %.hpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
