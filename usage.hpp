@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <iostream>
 #include <functional>
+#include <cassert>
 
 struct gol_run {
   long height, width, steps, workers;
@@ -51,16 +52,21 @@ gol_run parse_arguments(int argc, char **argv, const long NCPUS) {
 
   char *arg;
 
-  arg = getArgument(argc, argv, "thread");
-  if (arg) run.workers = std::atoi(arg);
   arg = getArgument(argc, argv, "height");
   if (arg) run.height = std::atoi(arg);
   arg = getArgument(argc, argv, "width");
   if (arg) run.width = std::atoi(arg);
   arg = getArgument(argc, argv, "step");
   if (arg) run.steps = std::atoi(arg);
+  arg = getArgument(argc, argv, "thread");
+  if (arg) run.workers = std::atoi(arg);
 
   #endif
+
+  assert(run.height > 0);
+  assert(run.width > 0);
+  assert(run.steps >= 0);
+  assert(run.workers > 0);
 
   return run;
 }
