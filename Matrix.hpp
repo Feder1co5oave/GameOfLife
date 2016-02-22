@@ -2,6 +2,7 @@
 #define Matrix_h_
 
 #include <functional>
+#include <cstdlib>
 
 typedef unsigned char cell_t;
 
@@ -48,6 +49,7 @@ public:
   }
   
   void updateRows(long start, long end);
+  virtual void randomizeRows(long start, long end, drand48_data *state = nullptr);
 
   inline static cell_t lifeLogic(cell_t cell, long liveNeighbors) {
     return _lifeLogic[cell][liveNeighbors];

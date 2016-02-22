@@ -15,13 +15,19 @@ int main(int argc, char *argv[]) {
 	}
 
 	gol_run run = parse_arguments(argc, argv, NPROCS);
-	Matrix m(run.height, run.width, true);
+	Matrix m(run.height, run.width, false);
 
 	if (run.workers != 0) {
 		ff::ParallelFor pf;
+		
+		pf.parallel_for_idx(0, run.height, 1, 0,
+			[&m](const long start, const long end, const int) {
+				m.randomizeRows(start, end);
+			});
+
 		for (long i = 0; i < run.steps; i++) {
 			pf.parallel_for_idx(0, run.height, 1, 0,
-				[&m](const long start, const long end, const int thid){
+				[&m](const long start, const long end, const int thid) {
 					m.updateRows(start, end);
 				}, run.workers);
 			m.swap();
