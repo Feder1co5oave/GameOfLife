@@ -1,6 +1,0 @@
-{
-  "cmd": "make",
-  "name": "buildc++",
-  "args": [],
-  "sh": true
-}
