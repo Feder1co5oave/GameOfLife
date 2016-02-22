@@ -1,6 +1,6 @@
 #!/bin/perl -w
 
-if ($#ARGV + 1 != ) {
+if ($#ARGV + 1 != 4) {
     print "Usage: test.pl <executable> <size> <iterations> <samples>\n";
     exit;
 }
@@ -11,7 +11,6 @@ my $STEP = $ARGV[2];
 my $N = $ARGV[3];
 my @json = ();
 
-print "[\n";
 foreach my $p (1,2,4,6,8,10,12,14,16) {
   my $sum=0;
   my @timings = ();
@@ -30,4 +29,4 @@ foreach my $p (1,2,4,6,8,10,12,14,16) {
   my $avg = $sum/$N;
   push @json, "[$p, $avg, " . join(", ", @sorted) . "]";
 }
-print join(",\n", @json) . "\n]\n";
+print "[\n" . join(",\n", @json) . "\n]\n";

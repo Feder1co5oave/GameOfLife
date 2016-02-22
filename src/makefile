@@ -9,26 +9,26 @@ OPTS = -DEXTREME_TEST
 
 all: build main.out main.ff.out main.seq.out
 
-main.out: main.cpp build/Matrix.o build/Barrier.o
+main.out: main.cpp libs/Matrix.o libs/Barrier.o
 	$(CXX) $^ $(CXXFLAGS) $(OPTS) -o $@
 
-main.x.out: main.cpp build/Matrix.o build/MatrixG.o build/Barrier.o
-	$(CXX) $^ $(CXXFLAGS) $(OPENCV) $(OPTS) -DGRAPHIC -o $@
+main.x.out: main.cpp libs/Matrix.o libs/MatrixG.o libs/Barrier.o
+	$(CXX) $^ $(CXXFLAGS) $(OPENCV) -DGRAPHIC -o $@
 
-main.ff.out: main_ff.cpp build/Matrix.o
+main.ff.out: main_ff.cpp libs/Matrix.o
 	$(CXX) $^ $(CXXFLAGS) $(FASTFLOW) $(OPTS) -o $@
 
-main.seq.out: main_seq.cpp build/Matrix.o
+main.seq.out: main_seq.cpp libs/Matrix.o
 	$(CXX) $^ $(CXXFLAGS) $(OPTS) -o $@
 
-build/%.o: %.cpp %.hpp
+libs/%.o: %.cpp %.hpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-build/MatrixG.o: MatrixG.cpp MatrixG.hpp
+libs/MatrixG.o: MatrixG.cpp MatrixG.hpp
 	$(CXX) $(CXXFLAGS) $(OPENCV) -c -o $@ $<
 
 build:
-	mkdir -p build
+	mkdir -p libs
 
 clean:
-	rm -Rvf build main.out
+	rm -Rvf libs/* *.out

@@ -12,7 +12,6 @@ my $N = $ARGV[3];
 my $HOST = $ARGV[4];
 my @json = ();
 
-print "[\n";
 foreach my $p (10,20,40,60,80,100,120,140,160,200,240) {
   my $sum=0;
   my @timings = ();
@@ -31,4 +30,4 @@ foreach my $p (10,20,40,60,80,100,120,140,160,200,240) {
   my $avg = $sum/$N;
   push @json, "[$p, $avg, " . join(", ", @sorted) . "]";
 }
-print join(",\n", @json) . "\n]\n";
+print "[\n" . join(",\n", @json) . "\n]\n";
