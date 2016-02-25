@@ -76,9 +76,12 @@ void Matrix::randomizeRows(long start, long end, drand48_data *state) {
 	}
 	
 	for (long i = start; i < end; i++) {
-		for (long j = 0; j < w; j++) {
+		for (long j = 0; j < w;) {
 			lrand48_r(state, &random);
-			this->read[i][j] = random % 2;
+			for (long b = 32; b != 0 && j < w; b--, j++) {
+				this->read[i][j] = random & 1;
+				random >>= 1;
+			}
 		}
 	}
 }
