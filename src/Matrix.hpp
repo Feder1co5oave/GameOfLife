@@ -40,7 +40,13 @@ public:
 	}
 	
 	inline static cell_t lifeLogic(cell_t cell, long liveNeighbors) {
-		return _lifeLogic[cell][liveNeighbors];
+		return
+			(~(liveNeighbors >> 2))
+			&
+			(liveNeighbors >> 1)
+			&
+			(liveNeighbors | cell)
+			& 1;
 	}
 
 	enum configuration {
