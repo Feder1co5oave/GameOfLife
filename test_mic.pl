@@ -1,7 +1,7 @@
 #!/bin/perl -w
 
-if ($#ARGV + 1 != 5) {
-    print "Usage: test.pl <executable> <size> <iterations> <samples> mic0|mic1\n";
+if ($#ARGV + 1 < 5) {
+    print "Usage: test.pl <executable> <size> <iterations> <samples> mic0|mic1 [<csv thread list>]\n";
     exit;
 }
 
@@ -10,9 +10,13 @@ my $SIZE = $ARGV[1];
 my $STEP = $ARGV[2];
 my $N = $ARGV[3];
 my $HOST = $ARGV[4];
+my @THREADS = (10,20,40,60,80,100,120,140,160,200,240);
+if ($#ARGV + 1 == 6) {
+	@THREADS = split /,/, $ARGV[5];
+}
 my @json = ();
 
-foreach my $p (10,20,40,60,80,100,120,140,160,200,240) {
+foreach my $p (@THREADS) {
   my $sum=0;
   my @timings = ();
   
