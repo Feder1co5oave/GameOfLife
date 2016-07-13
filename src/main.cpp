@@ -13,7 +13,10 @@ using namespace std;
 
 #ifdef GRAPHIC
 void bodyThread(MatrixG *m, long start, long end, const gol_run *run, barrier *bar) {
-	if (!run->configurations) m->randomizeRows(start, end);
+	if (!run->configurations) {
+		m->randomizeRows(start, end);
+		bar->await();
+	}
 	for (long k = 0; k < run->steps; k++) {
 		m->updateRows(start, end);
 		bar->await([&]{
@@ -24,7 +27,10 @@ void bodyThread(MatrixG *m, long start, long end, const gol_run *run, barrier *b
 }
 #else
 void bodyThread(Matrix *m, long start, long end, const gol_run *run, barrier *bar) {
-	if (!run->configurations) m->randomizeRows(start, end);
+	if (!run->configurations) {
+		m->randomizeRows(start, end);
+		bar->await();
+	}
 	for (long k = 0; k < run->steps; k++) {
 		m->updateRows(start, end);
 		bar->await([&]{
