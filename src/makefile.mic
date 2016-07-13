@@ -1,3 +1,5 @@
-include makefile.xeon
+include makefile
 
+FF_ROOT = /home/spm1501/fastflow
+CXX = icc
 CXXFLAGS += -mmic
