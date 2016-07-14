@@ -10,10 +10,10 @@
 	#include "MatrixG.hpp"
 #endif
 
-#define CHUNK_SIZE 20
+#define CHUNK_SIZE 200
 
-#ifndef MAX
-#define MAX(a,b) ((a) > (b) ? (a) : (b))
+#ifndef MIN
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
 #endif
 
 using namespace std;
@@ -45,19 +45,19 @@ void bodyThread(MatrixG *m, const gol_run *run, barrier *bar, nb_queue<long> *q)
 	}
 }
 #else
-void bodyThread(Matrix *m, const gol_run *run, barrier *bar, nb_queue<long> *q) {
+void bodyThread(Matrix *m, const gol_run *run, barrier *bar, nb_queue<pair<long,long>> *q) {
 	if (!run->configurations) {
-		long const *next = q->get();
+		const pair<long,long> *next = q->get();
 		while (next != nullptr) {
-			m->randomizeRows(*next, MAX(*next + CHUNK_SIZE, run->height));
+			m->randomizeRows(next->first, next->second);
 			next = q->get();
 		}
 		bar->await([&]{ q->reset(); });
 	}
 	for (long k = 0; k < run->steps; k++) {
-		long const *next = q->get();
+		const pair<long,long> *next = q->get();
 		while (next != nullptr) {
-			m->updateRows(*next, MAX(*next + CHUNK_SIZE, run->height));
+			m->updateRows(next->first, next->second);
 			next = q->get();
 		}
 		bar->await([&]{
@@ -94,13 +94,14 @@ int main(int argc, char *argv[]) {
 	
 	m.drawConfigurations(run.configurations);
 
-	long nChunks = run.height / CHUNK_SIZE;
-	long *chunks = new long[nChunks];
-	for (long i = 0; i < nChunks; i++) chunks[i] = i * CHUNK_SIZE;
+	long nChunks = run.workers * 5;
+	long chunk_size = run.height / nChunks;
+	pair<long,long> *chunks = new pair<long,long>[nChunks];
+	for (long i = 0; i < nChunks; i++) chunks[i] = make_pair(i * chunk_size, MIN((i+1) * chunk_size, run.height));
 
 	vector<unique_ptr<thread> > tid;
 	barrier bar(run.workers);
-	nb_queue<long> queue(nChunks, chunks);
+	nb_queue<pair<long,long>> queue(nChunks, chunks);
 	cpu_set_t *cpuset = CPU_ALLOC(NPROCS);
 	size_t setsize = CPU_ALLOC_SIZE(NPROCS);
 
