@@ -5,36 +5,64 @@
 #include <vector>
 #include "usage.hpp"
 #include "Barrier.hpp"
+#include "nb_queue.hpp"
 #ifdef GRAPHIC
 	#include "MatrixG.hpp"
+#endif
+
+#define CHUNK_SIZE 20
+
+#ifndef MAX
+#define MAX(a,b) ((a) > (b) ? (a) : (b))
 #endif
 
 using namespace std;
 
 #ifdef GRAPHIC
-void bodyThread(MatrixG *m, long start, long end, const gol_run *run, barrier *bar) {
+void bodyThread(MatrixG *m, const gol_run *run, barrier *bar, nb_queue<long> *q) {
 	if (!run->configurations) {
-		m->randomizeRows(start, end);
-		bar->await();
+		long const *next = q->get();
+		while (next != nullptr) {
+			m->randomizeRows(*next, MAX(*next + CHUNK_SIZE, run->height));
+			next = q->get();
+		}
+		bar->await([&]{
+			q->reset();
+			m->print();
+		});
 	}
 	for (long k = 0; k < run->steps; k++) {
-		m->updateRows(start, end);
+		long const *next = q->get();
+		while (next != nullptr) {
+			m->updateRows(*next, MAX(*next + CHUNK_SIZE, run->height));
+			next = q->get();
+		}
 		bar->await([&]{
 			m->swap();
+			q->reset();
 			m->print();
 		});
 	}
 }
 #else
-void bodyThread(Matrix *m, long start, long end, const gol_run *run, barrier *bar) {
+void bodyThread(Matrix *m, const gol_run *run, barrier *bar, nb_queue<long> *q) {
 	if (!run->configurations) {
-		m->randomizeRows(start, end);
-		bar->await();
+		long const *next = q->get();
+		while (next != nullptr) {
+			m->randomizeRows(*next, MAX(*next + CHUNK_SIZE, run->height));
+			next = q->get();
+		}
+		bar->await([&]{ q->reset(); });
 	}
 	for (long k = 0; k < run->steps; k++) {
-		m->updateRows(start, end);
+		long const *next = q->get();
+		while (next != nullptr) {
+			m->updateRows(*next, MAX(*next + CHUNK_SIZE, run->height));
+			next = q->get();
+		}
 		bar->await([&]{
 			m->swap();
+			q->reset();
 			#ifdef PRINT
 			m->print();
 			#endif
@@ -66,18 +94,20 @@ int main(int argc, char *argv[]) {
 	
 	m.drawConfigurations(run.configurations);
 
-	int nRow = (run.height / run.workers);
+	long nChunks = run.height / CHUNK_SIZE;
+	long *chunks = new long[nChunks];
+	for (long i = 0; i < nChunks; i++) chunks[i] = i * CHUNK_SIZE;
+
 	vector<unique_ptr<thread> > tid;
 	barrier bar(run.workers);
+	nb_queue<long> queue(nChunks, chunks);
 	cpu_set_t *cpuset = CPU_ALLOC(NPROCS);
 	size_t setsize = CPU_ALLOC_SIZE(NPROCS);
 
 	for (long i = 0; i < run.workers; i++) {
-		long start = nRow * i;
-		long end   = i != run.workers - 1 ? start + nRow : run.height;
 		int cpu;
 
-		auto th = unique_ptr<thread>(new thread(bodyThread, &m, start, end, &run, &bar));
+		auto th = unique_ptr<thread>(new thread(bodyThread, &m, &run, &bar, &queue));
 
 		#ifdef __MIC__ // bind to different physical cores first
 		cpu = (i*4 + 1 + (i*4)/NPROCS ) % NPROCS;
