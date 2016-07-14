@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 		pf.parallel_for_idx(0, run.height, 1, 0,
 			[&m](const long start, const long end, const int) {
 				m.randomizeRows(start, end);
-		});
+		}, run.workers);
 
 		for (long i = 0; i < run.steps; i++) {
 			pf.parallel_for_idx(0, run.height, 1, 0,
