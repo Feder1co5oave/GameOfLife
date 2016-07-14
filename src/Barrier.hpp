@@ -24,6 +24,6 @@ public:
 	 * The thread that has come last executes cb() before awakening all other threads.
 	 * @returns true if it is the last thread, false otherwise
 	 */
-	bool await(function<void()> cb = nullptr);
+	bool await(function<void()> cb = []{});
 	virtual ~barrier() {}
 };
