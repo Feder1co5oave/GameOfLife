@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
 	
 	m.drawConfigurations(run.configurations);
 
-	long nChunks = run.workers * 5;
+	long nChunks = run.workers * 20;
 	long chunk_size = run.height / nChunks;
 	pair<long,long> *chunks = new pair<long,long>[nChunks];
 	for (long i = 0; i < nChunks; i++) chunks[i] = make_pair(i * chunk_size, MIN((i+1) * chunk_size, run.height));
