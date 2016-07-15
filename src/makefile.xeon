@@ -1,0 +1,5 @@
+include makefile
+
+FF_ROOT = /home/spm1501/fastflow
+CXX = icc
+CXXFLAGS += -march=corei7-avx

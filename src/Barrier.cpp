@@ -19,7 +19,7 @@ bool barrier::await(function<void()> cb) {
 	} else {
 		current ^= 1;
 		counts[current] = 0;
-		cb();
+		if (cb) cb();
 		condition.notify_all();
 		return true;
 	}

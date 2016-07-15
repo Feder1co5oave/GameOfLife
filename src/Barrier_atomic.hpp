@@ -21,7 +21,7 @@ public:
 		new_gen(ng) { }
 
 	explicit barrier(int n) :
-		barrier(n, nullptr) { }
+		barrier(n, [](int){}) { }
 
 	bool await() {
 		int my_gen = generation.load();

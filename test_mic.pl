@@ -1,7 +1,7 @@
 #!/bin/perl -w
 
-if ($#ARGV + 1 < 4) {
-    print "Usage: test.pl <executable> <size> <iterations> <samples> [<csv thread list>]\n";
+if ($#ARGV + 1 < 5) {
+    print "Usage: test.pl <executable> <size> <iterations> <samples> mic0|mic1 [<csv thread list>]\n";
     exit;
 }
 
@@ -9,9 +9,10 @@ my $EXE = $ARGV[0];
 my $SIZE = $ARGV[1];
 my $STEP = $ARGV[2];
 my $N = $ARGV[3];
-my @THREADS = (1,2,4,6,8,10,12,14,16);
-if ($#ARGV + 1 == 5) {
-	@THREADS = split /,/, $ARGV[4];
+my $HOST = $ARGV[4];
+my @THREADS = (10,20,40,60,80,100,120,140,160,200,240);
+if ($#ARGV + 1 == 6) {
+	@THREADS = split /,/, $ARGV[5];
 }
 my @json = ();
 
@@ -21,7 +22,7 @@ foreach my $p (@THREADS) {
   
   print STDERR "$p: ";
   foreach my $i (1..$N) {
-    my $r=`\\time --format="%e" ./$EXE $SIZE $STEP $p 2>&1`;
+    my $r=`\\ssh $HOST "TIMEFORMAT=%R && time ./$EXE $SIZE $STEP $p" 2>&1`;
     $sum=$sum + $r;
     $r =~ s/^\s+|\s+$//g;
     push @timings, $r;
