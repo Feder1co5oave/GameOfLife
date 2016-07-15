@@ -15,11 +15,14 @@ using namespace std;
 void bodyThread(MatrixG *m, long start, long end, const gol_run *run, barrier *bar) {
 	if (!run->configurations) {
 		m->randomizeRows(start, end);
-		bar->await();
+		bar->await([&m]() { m->print(); });
 	}
 	for (long k = 0; k < run->steps; k++) {
 		m->updateRows(start, end);
-		bar->await();
+		bar->await([&m]() {
+			m->swap();
+			m->print();
+		});
 	}
 }
 #else
@@ -30,7 +33,7 @@ void bodyThread(Matrix *m, long start, long end, const gol_run *run, barrier *ba
 	}
 	for (long k = 0; k < run->steps; k++) {
 		m->updateRows(start, end);
-		bar->await();
+		bar->await([&m]() { m->swap(); });
 	}
 	//usleep(rand() % 1000000);
 	//cerr << -sched_getcpu();
@@ -60,12 +63,7 @@ int main(int argc, char *argv[]) {
 
 	int nRow = (run.height / run.workers);
 	vector<unique_ptr<thread> > tid;
-	barrier bar(run.workers, [&m](int) {
-		m.swap();
-		#ifdef GRAPHIC
-		m.print();
-		#endif
-	});
+	barrier bar(run.workers);
 	cpu_set_t *cpuset = CPU_ALLOC(NPROCS);
 	size_t setsize = CPU_ALLOC_SIZE(NPROCS);
 
