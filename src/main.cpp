@@ -15,11 +15,13 @@ using namespace std;
 void bodyThread(MatrixG *m, long start, long end, const gol_run *run, barrier *bar) {
 	if (!run->configurations) {
 		m->randomizeRows(start, end);
-		bar->await();
+		bar->await([&m,run]{
+			if (run->check) cout << *m << endl;
+		});
 	}
 	for (long k = 0; k < run->steps; k++) {
 		m->updateRows(start, end);
-		bar->await([&]{
+		bar->await([&m,run]{
 			m->swap();
 			m->print();
 		});
@@ -29,19 +31,16 @@ void bodyThread(MatrixG *m, long start, long end, const gol_run *run, barrier *b
 void bodyThread(Matrix *m, long start, long end, const gol_run *run, barrier *bar) {
 	if (!run->configurations) {
 		m->randomizeRows(start, end);
-		bar->await();
+		bar->await([&m,run]{
+			if (run->check) cout << *m << endl;
+		});
 	}
 	for (long k = 0; k < run->steps; k++) {
 		m->updateRows(start, end);
-		bar->await([&]{
+		bar->await([&m]{
 			m->swap();
-			#ifdef PRINT
-			m->print();
-			#endif
 		});
 	}
-	//usleep(rand() % 1000000);
-	//cerr << -sched_getcpu();
 }
 #endif
 
@@ -53,7 +52,7 @@ int main(int argc, char *argv[]) {
 		return 0;
 	}
 
-	gol_run run = parse_arguments(argc, argv, NPROCS);
+	const gol_run run = parse_arguments(argc, argv, NPROCS);
 
 	#if GRAPHIC
 	MatrixG m(run.height, run.width, false);
@@ -97,5 +96,6 @@ int main(int argc, char *argv[]) {
 	for (long i = 0; i < run.workers; i++) tid[i]->join();
 	CPU_FREE(cpuset);
 
+	if (run.check) cout << m << endl;
 	return 0;
 }
