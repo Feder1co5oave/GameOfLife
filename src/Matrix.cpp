@@ -41,14 +41,14 @@ Matrix::~Matrix() {
 	delete[] (this->write - 1);
 }
 
-void Matrix::print() const {
+void Matrix::print(std::ostream& os) const {
 	for (long i = 0; i < h; i++) {
 		for (long j = 0; j < w; j++) {
-			std::cout << (this->read[i][j] ? "\u2588\u2588" : "  ");
+			os << (this->read[i][j] ? "\u2588\u2588" : "  ");
 		}
-		std::cout << std::endl;
+		os << std::endl;
 	}
-	std::cout << std::endl;
+	os << std::endl;
 }
 
 cell_t _lifeLogic[2][9] = {

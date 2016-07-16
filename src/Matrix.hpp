@@ -20,7 +20,7 @@ protected:
 public:
 	Matrix(long h, long w, bool random = false);
 	virtual ~Matrix();
-	void print() const;
+	void print(std::ostream& os = std::cout) const;
 	virtual void set(long i, long j, cell_t v) { write[i][j] = v; }
 	cell_t get(long i, long j) { return read[i][j]; }
 	void swap();	
