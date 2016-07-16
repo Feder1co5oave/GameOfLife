@@ -82,4 +82,8 @@ protected:
 	}
 };
 
+inline std::ostream& operator<<(std::ostream& os, Matrix const& m) {
+	return os << m.hashcode();
+}
+
 #endif // ifndef MATRIX_H
