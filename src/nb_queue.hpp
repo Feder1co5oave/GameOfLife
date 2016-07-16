@@ -4,7 +4,7 @@ template <class T>
 class nb_queue {
 	const size_t size;
 	const T* const queue;
-	atomic<long> next;
+	std::atomic<long> next;
 public:
 	nb_queue(const size_t _size, const T* const data): size(_size), queue(data), next(0) { }
 	void reset() { next = 0; }
