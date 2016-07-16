@@ -24,9 +24,9 @@ Matrix::Matrix(long h, long w, bool random) {
 			this->write[i][j] = 0;
 		}
 	}
-
+	
 	if (random) randomizeRows(0, h);
-
+	
 	// wrap-around
 	read[-1] = read[h-1];
 	read[h] = read[0];
@@ -67,17 +67,13 @@ void Matrix::updateRows(long start, long end) {
 	}
 }
 
-void Matrix::randomizeRows(long start, long end, drand48_data *state) {
-	drand48_data state_;
+void Matrix::randomizeRows(long start, long end) {
+	drand48_data state;
 	long int random;
-	if (state == nullptr) {
-		srand48_r(start ^ time(NULL) ^ end, &state_);
-		state = &state_;
-	}
-	
 	for (long i = start; i < end; i++) {
+		srand48_r(w << 24 | h << 12 | i, &state);
 		for (long j = 0; j < w;) {
-			lrand48_r(state, &random);
+			lrand48_r(&state, &random);
 			for (long b = 32; b != 0 && j < w; b--, j++) {
 				this->read[i][j] = random & 1;
 				random >>= 1;

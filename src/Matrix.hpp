@@ -25,7 +25,7 @@ public:
 	cell_t get(long i, long j) { return read[i][j]; }
 	void swap();	
 	void updateRows(long start, long end);
-	virtual void randomizeRows(long start, long end, drand48_data *state = nullptr);
+	virtual void randomizeRows(long start, long end);
 
 	inline long countAlive(long x, long y) const {
 		if (y == 0)
