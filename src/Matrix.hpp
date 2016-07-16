@@ -2,11 +2,22 @@
 #define MATRIX_H
 
 #include <cstdlib>
+#include <ios>
+#include <iomanip>
 
 typedef unsigned char cell_t;
 
 extern cell_t _lifeLogic[][9];
 
+struct digest128 {
+	uint64_t upper, lower;
+	digest128(uint64_t up, uint64_t low): upper(up), lower(low) {}
+	friend std::ostream& operator<<(std::ostream& os, digest128 const& d) {
+		os << std::setfill('0') << std::setw(16) << std::hex << std::right << d.upper;
+		os << std::setfill('0') << std::setw(16) << std::hex << std::right << d.lower;
+		return os;
+	}
+};
 
 class Matrix {
 
@@ -59,6 +70,7 @@ public:
 	
 	void draw(enum configuration conf, long x, long y);
 	void drawConfigurations(long conf);
+	digest128 hashcode() const;
 
 protected:
 	template <long W> void drawMatrix(cell_t model[][W], long H, long x, long Y);

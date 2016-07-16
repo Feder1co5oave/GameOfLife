@@ -129,3 +129,23 @@ void Matrix::drawMatrix(cell_t model[][W], long H, long x, long y) {
 		for (long j = 0; j < W; j++)
 			set(x + i, y + j, model[i][j]);
 }
+
+digest128 Matrix::hashcode() const {
+	uint64_t packed0 = 0, packed1 = 0, sum0 = 0, sum1 = 0;
+	for (long i = 0; i < h; i++) {
+		for (long j = 0; j < w;) {
+			for (long k = 64; k != 0 && j < w; k--, j++) packed0 = (packed0 << 1) | read[i][j];
+			if (j < w) packed1 = packed0;
+			for (long k = 64; k != 0 && j < w; k--, j++) packed0 = (packed0 << 1) | read[i][j];
+			sum0 += packed0;
+			sum0 += sum0 << 10;
+			sum0 ^= sum0 >> 6;
+			sum1 += packed1;
+			sum1 += sum1 << 11;
+			sum1 ^= sum1 >> 4;
+			packed0 = packed1 = 0;
+		}
+	}
+	return digest128(sum1, sum0);
+}
+
