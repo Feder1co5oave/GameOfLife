@@ -19,59 +19,27 @@
 using namespace std;
 
 #ifdef GRAPHIC
-void bodyThread(MatrixG *m, const gol_run *run, barrier *bar, nb_queue<long> *q) {
-	if (!run->configurations) {
-		long const *next = q->get();
-		while (next != nullptr) {
-			m->randomizeRows(*next, MAX(*next + CHUNK_SIZE, run->height));
-			next = q->get();
-		}
-		bar->await([&]{
-			q->reset();
-			m->print();
-		});
-	}
-	for (long k = 0; k < run->steps; k++) {
-		long const *next = q->get();
-		while (next != nullptr) {
-			m->updateRows(*next, MAX(*next + CHUNK_SIZE, run->height));
-			next = q->get();
-		}
-		bar->await([&]{
-			m->swap();
-			q->reset();
-			m->print();
-		});
-	}
-}
+void bodyThread(MatrixG *m, const gol_run *run, barrier *bar, nb_queue<long,long> *q) {
 #else
 void bodyThread(Matrix *m, const gol_run *run, barrier *bar, nb_queue<pair<long,long>> *q) {
+#endif
 	if (!run->configurations) {
-		const pair<long,long> *next = q->get();
-		while (next != nullptr) {
-			m->randomizeRows(next->first, next->second);
-			next = q->get();
-		}
+		const pair<long,long> *next;
+		while (next = q->get()) m->randomizeRows(next->first, next->second);
 		bar->await([&]{ q->reset(); });
 	}
 	for (long k = 0; k < run->steps; k++) {
-		const pair<long,long> *next = q->get();
-		while (next != nullptr) {
-			m->updateRows(next->first, next->second);
-			next = q->get();
-		}
+		const pair<long,long> *next;
+		while (next = q->get()) m->updateRows(next->first, next->second);
 		bar->await([&]{
-			m->swap();
 			q->reset();
-			#ifdef PRINT
+			m->swap();
+			#ifdef GRAPHIC
 			m->print();
 			#endif
 		});
 	}
-	//usleep(rand() % 1000000);
-	//cerr << -sched_getcpu();
 }
-#endif
 
 int main(int argc, char *argv[]) {
 	const int NPROCS = sysconf(_SC_NPROCESSORS_ONLN);
