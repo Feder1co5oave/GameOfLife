@@ -26,7 +26,7 @@ void bodyThread(Matrix *m, const gol_run *run, barrier *bar, nb_queue<pair<long,
 	if (!run->configurations) {
 		const pair<long,long> *next;
 		while (next = q->get()) m->randomizeRows(next->first, next->second);
-		bar->await([&m,run]{
+		bar->await([m,q,run]{
 			q->reset();
 			if (run->check) cout << *m << endl;
 		});
@@ -34,7 +34,7 @@ void bodyThread(Matrix *m, const gol_run *run, barrier *bar, nb_queue<pair<long,
 	for (long k = 0; k < run->steps; k++) {
 		const pair<long,long> *next;
 		while (next = q->get()) m->updateRows(next->first, next->second);
-		bar->await([&]{
+		bar->await([m,q]{
 			q->reset();
 			m->swap();
 			#ifdef GRAPHIC
