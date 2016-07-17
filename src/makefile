@@ -9,10 +9,10 @@ OPTS = -DEXTREME_TEST
 
 all: build main.out main.ff.out main.seq.out
 
-main.out: main.cpp libs/Matrix.o libs/Barrier.o
+main.out: main.cpp libs/Matrix.o
 	$(CXX) $^ $(CXXFLAGS) $(OPTS) -o $@
 
-main.x.out: main.cpp libs/Matrix.o libs/MatrixG.o libs/Barrier.o
+main.x.out: main.cpp libs/Matrix.o libs/MatrixG.o
 	$(CXX) $^ $(CXXFLAGS) $(OPENCV) -DGRAPHIC -o $@
 
 main.ff.out: main_ff.cpp libs/Matrix.o
