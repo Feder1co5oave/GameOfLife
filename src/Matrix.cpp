@@ -106,6 +106,9 @@ void Matrix::draw(enum configuration conf, long x, long y) {
 			break;
 		case GOSPERSGUN:
 			drawMatrix(gospersgun, 11, x, y);
+			break;
+		case BLOB:
+			drawMatrix(blob, 6, x, y);
 	}
 }
 
@@ -120,6 +123,8 @@ void Matrix::drawConfigurations(long conf) {
 		for (long p = 10; p < w-30; p += 50) draw(HAMMERHEAD, h-25, p);
 	if ((conf & GOSPERSGUN) && w > 40)
 		for (long p = 0; p < h-11; p += 50) draw(GOSPERSGUN, p, 40);
+	if ((conf & BLOB) && w > 50)
+		for (long p = 30; p < h-10; p += 30) draw(BLOB, p, w-40);
 	swap();
 }
 

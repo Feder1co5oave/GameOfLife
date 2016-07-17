@@ -38,6 +38,7 @@ void show_usage(char **argv) {
 	std::cout << "  --engines               draw some Schick's Engines" << std::endl;
 	std::cout << "  --gliders               draw some Gliders" << std::endl;
 	std::cout << "  --guns                  draw some Gosper's Guns" << std::endl;
+	std::cout << "  --blobs                 draw some Blobs" << std::endl;
 	std::cout << "  --heads                 draw some Hammerheads" << std::endl;
 	std::cout << "  --help   | -?           print this help" << std::endl;
 	std::cout << "If no configurations are drawn, the World will be initialized at random." << std::endl;
@@ -66,6 +67,7 @@ gol_run parse_arguments(int argc, char **argv, const long NCPUS) {
 	if (existArgument(argc, argv, "--gliders")) run.configurations |= Matrix::GLIDER;
 	if (existArgument(argc, argv, "--guns"))    run.configurations |= Matrix::GOSPERSGUN;
 	if (existArgument(argc, argv, "--heads"))   run.configurations |= Matrix::HAMMERHEAD;
+	if (existArgument(argc, argv, "--blobs"))   run.configurations |= Matrix::BLOB;
 	if (existArgument(argc, argv, "--check")
 	 || existArgument(argc, argv, "-c"))        run.check = true;
 

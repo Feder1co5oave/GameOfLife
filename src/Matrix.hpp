@@ -65,7 +65,8 @@ public:
 		BOTTLE = 2,
 		SCHICKENGINE = 4,
 		HAMMERHEAD = 8,
-		GOSPERSGUN = 16
+		GOSPERSGUN = 16,
+		BLOB = 32
 	};
 	
 	void draw(enum configuration conf, long x, long y);
