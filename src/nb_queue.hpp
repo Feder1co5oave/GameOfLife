@@ -6,7 +6,7 @@ class nb_queue {
 	const T* const queue;
 	std::atomic<long> next;
 public:
-	nb_queue(const size_t _size, const T* const data): size(_size), queue(data), next(0) { }
+	nb_queue(const size_t _size, const T* data): size(_size), queue(data), next(0) { }
 	void reset() { next = 0; }
 	const T* get() {
 		long _next = next++;

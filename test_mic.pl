@@ -10,7 +10,7 @@ my $SIZE = $ARGV[1];
 my $STEP = $ARGV[2];
 my $N = $ARGV[3];
 my $HOST = $ARGV[4];
-my @THREADS = (10,20,40,60,80,100,120,140,160,200,240);
+my @THREADS = (1,2,4,10,20,40,60,80,100,120,140,160,180,200,220,240);
 if ($#ARGV + 1 == 6) {
 	@THREADS = split /,/, $ARGV[5];
 }
