@@ -22,10 +22,10 @@ main.seq.out: main_seq.cpp libs/Matrix.o
 	$(CXX) $^ $(CXXFLAGS) $(OPTS) -o $@
 
 libs/%.o: %.cpp %.hpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $< $(CXXFLAGS) -c -o $@
 
 libs/MatrixG.o: MatrixG.cpp MatrixG.hpp
-	$(CXX) $(CXXFLAGS) $(OPENCV) -c -o $@ $<
+	$(CXX) $< $(CXXFLAGS) $(OPENCV) -c -o $@
 
 build:
 	mkdir -p libs
