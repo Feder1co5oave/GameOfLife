@@ -4,10 +4,16 @@
 #include <unistd.h>
 #include <vector>
 #include "usage.hpp"
+
+#ifdef SPIN
 #include "Barrier_atomic.hpp"
+#else
+#include "Barrier.hpp"
+#endif
+
 #include "nb_queue.hpp"
 #ifdef GRAPHIC
-	#include "MatrixG.hpp"
+#include "MatrixG.hpp"
 #endif
 
 #define CHUNK_SIZE 200
