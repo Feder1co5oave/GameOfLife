@@ -62,14 +62,18 @@ int main(int argc, char *argv[]) {
 	
 	m.drawConfigurations(run.configurations);
 
-	long nChunks = run.workers * 20;
-	long chunk_size = run.height / nChunks;
-	pair<long,long> *chunks = new pair<long,long>[nChunks];
-	for (long i = 0; i < nChunks; i++) chunks[i] = make_pair(i * chunk_size, MIN((i+1) * chunk_size, run.height));
+	long n_chunks = MIN(run.workers * 10, run.height);
+	pair<long,long> *chunks = new pair<long,long>[n_chunks];
+	long start = 0;
+	for (long i = 0; i < n_chunks; i++) {
+		long end = (i+1) * run.height / n_chunks;
+		chunks[i] = make_pair(start, end);
+		start = end;
+	}
 
 	vector<unique_ptr<thread> > tid;
 	barrier bar(run.workers);
-	nb_queue<pair<long,long>> queue(nChunks, chunks);
+	nb_queue<pair<long,long>> queue(n_chunks, chunks);
 	cpu_set_t *cpuset = CPU_ALLOC(NPROCS);
 	size_t setsize = CPU_ALLOC_SIZE(NPROCS);
 
