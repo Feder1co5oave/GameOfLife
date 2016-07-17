@@ -19,7 +19,7 @@
 using namespace std;
 
 #ifdef GRAPHIC
-void bodyThread(MatrixG *m, const gol_run *run, barrier *bar, nb_queue<long,long> *q) {
+void bodyThread(MatrixG *m, const gol_run *run, barrier *bar, nb_queue<pair<long,long>> *q) {
 #else
 void bodyThread(Matrix *m, const gol_run *run, barrier *bar, nb_queue<pair<long,long>> *q) {
 #endif
