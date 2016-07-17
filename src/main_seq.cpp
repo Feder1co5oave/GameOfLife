@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
 		return 0;
 	}
 
-	gol_run run = parse_arguments(argc, argv, 0);
+	gol_run run = parse_arguments(argc, argv, 1);
 	Matrix m(run.height, run.width, true);
 	
 	if (run.check) cout << m << endl;
