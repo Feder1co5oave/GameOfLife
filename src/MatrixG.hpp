@@ -17,7 +17,7 @@ public:
 	void print() const;
 	void set (long i, long j, cell_t v) override;
 	void updateRows(long start, long end);
-	void randomizeRows(long start, long end, drand48_data *state = nullptr) override;
+	void randomizeRows(long start, long end) override;
 };
 
 #endif // ifndef MATRIXG_H

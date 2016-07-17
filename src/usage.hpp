@@ -6,6 +6,7 @@
 
 struct gol_run {
 	long height, width, steps, workers, configurations;
+	bool check;
 };
 
 char* getArgument(int argc, char **argv, const std::string& option) {
@@ -35,6 +36,7 @@ void show_usage(char **argv) {
 	std::cout << "  --height | -h <number>  height of the matrix" << std::endl;
 	std::cout << "  --width  | -w <number>  width of the matrix" << std::endl;
 	std::cout << "  --step   | -s <number>  number of step, if 0 run forever" << std::endl;
+	std::cout << "  --check  | -c           print hashcodes" << std::endl;
 	std::cout << "  --bottles               draw some Bottles" << std::endl;
 	std::cout << "  --engines               draw some Schick's Engines" << std::endl;
 	std::cout << "  --gliders               draw some Gliders" << std::endl;
@@ -46,7 +48,7 @@ void show_usage(char **argv) {
 }
 
 gol_run parse_arguments(int argc, char **argv, const long NCPUS) {
-	gol_run run = {1000, 1000, 1000, NCPUS, 0};
+	gol_run run = {1000, 1000, 1000, NCPUS, 0, false};
 	
 	#ifdef EXTREME_TEST
 	
@@ -81,6 +83,8 @@ gol_run parse_arguments(int argc, char **argv, const long NCPUS) {
 	if (existArgument(argc, argv, "--gliders")) run.configurations |= Matrix::GLIDER;
 	if (existArgument(argc, argv, "--guns"))    run.configurations |= Matrix::GOSPERSGUN;
 	if (existArgument(argc, argv, "--heads"))   run.configurations |= Matrix::HAMMERHEAD;
+	if (existArgument(argc, argv, "--check")
+	 || existArgument(argc, argv, "-c"))        run.check = true;
 
 	#endif
 

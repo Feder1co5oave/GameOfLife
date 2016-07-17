@@ -2,11 +2,22 @@
 #define MATRIX_H
 
 #include <cstdlib>
+#include <ios>
+#include <iomanip>
 
 typedef unsigned char cell_t;
 
 extern cell_t _lifeLogic[][9];
 
+struct digest128 {
+	uint64_t upper, lower;
+	digest128(uint64_t up, uint64_t low): upper(up), lower(low) {}
+	friend std::ostream& operator<<(std::ostream& os, digest128 const& d) {
+		os << std::setfill('0') << std::setw(16) << std::hex << std::right << d.upper;
+		os << std::setfill('0') << std::setw(16) << std::hex << std::right << d.lower;
+		return os;
+	}
+};
 
 class Matrix {
 
@@ -20,12 +31,12 @@ protected:
 public:
 	Matrix(long h, long w, bool random = false);
 	virtual ~Matrix();
-	void print() const;
+	void print(std::ostream& os = std::cout) const;
 	virtual void set(long i, long j, cell_t v) { write[i][j] = v; }
 	cell_t get(long i, long j) { return read[i][j]; }
 	void swap();	
 	void updateRows(long start, long end);
-	virtual void randomizeRows(long start, long end, drand48_data *state = nullptr);
+	virtual void randomizeRows(long start, long end);
 
 	inline long countAlive(long x, long y) const {
 		if (y == 0)
@@ -59,6 +70,7 @@ public:
 	
 	void draw(enum configuration conf, long x, long y);
 	void drawConfigurations(long conf);
+	digest128 hashcode() const;
 
 protected:
 	template <long W> void drawMatrix(cell_t model[][W], long H, long x, long Y);
@@ -69,5 +81,9 @@ protected:
 		       read[x+1][y-1] + read[x+1][ y ] + read[x+1][y+1];
 	}
 };
+
+inline std::ostream& operator<<(std::ostream& os, Matrix const& m) {
+	return os << m.hashcode();
+}
 
 #endif // ifndef MATRIX_H

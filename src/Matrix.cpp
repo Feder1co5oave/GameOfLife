@@ -24,9 +24,9 @@ Matrix::Matrix(long h, long w, bool random) {
 			this->write[i][j] = 0;
 		}
 	}
-
+	
 	if (random) randomizeRows(0, h);
-
+	
 	// wrap-around
 	read[-1] = read[h-1];
 	read[h] = read[0];
@@ -41,14 +41,14 @@ Matrix::~Matrix() {
 	delete[] (this->write - 1);
 }
 
-void Matrix::print() const {
+void Matrix::print(std::ostream& os) const {
 	for (long i = 0; i < h; i++) {
 		for (long j = 0; j < w; j++) {
-			std::cout << (this->read[i][j] ? "\u2588\u2588" : "  ");
+			os << (this->read[i][j] ? "\u2588\u2588" : "  ");
 		}
-		std::cout << std::endl;
+		os << std::endl;
 	}
-	std::cout << std::endl;
+	os << std::endl;
 }
 
 cell_t _lifeLogic[2][9] = {
@@ -67,17 +67,13 @@ void Matrix::updateRows(long start, long end) {
 	}
 }
 
-void Matrix::randomizeRows(long start, long end, drand48_data *state) {
-	drand48_data state_;
+void Matrix::randomizeRows(long start, long end) {
+	drand48_data state;
 	long int random;
-	if (state == nullptr) {
-		srand48_r(start ^ time(NULL) ^ end, &state_);
-		state = &state_;
-	}
-	
 	for (long i = start; i < end; i++) {
+		srand48_r(w << 24 | h << 12 | i, &state);
 		for (long j = 0; j < w;) {
-			lrand48_r(state, &random);
+			lrand48_r(&state, &random);
 			for (long b = 32; b != 0 && j < w; b--, j++) {
 				this->read[i][j] = random & 1;
 				random >>= 1;
@@ -133,3 +129,23 @@ void Matrix::drawMatrix(cell_t model[][W], long H, long x, long y) {
 		for (long j = 0; j < W; j++)
 			set(x + i, y + j, model[i][j]);
 }
+
+digest128 Matrix::hashcode() const {
+	uint64_t packed0 = 0, packed1 = 0, sum0 = 0, sum1 = 0;
+	for (long i = 0; i < h; i++) {
+		for (long j = 0; j < w;) {
+			for (long k = 64; k != 0 && j < w; k--, j++) packed0 = (packed0 << 1) | read[i][j];
+			if (j < w) packed1 = packed0;
+			for (long k = 64; k != 0 && j < w; k--, j++) packed0 = (packed0 << 1) | read[i][j];
+			sum0 += packed0;
+			sum0 += sum0 << 10;
+			sum0 ^= sum0 >> 6;
+			sum1 += packed1;
+			sum1 += sum1 << 11;
+			sum1 ^= sum1 >> 4;
+			packed0 = packed1 = 0;
+		}
+	}
+	return digest128(sum1, sum0);
+}
+

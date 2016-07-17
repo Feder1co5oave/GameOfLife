@@ -31,9 +31,9 @@ void MatrixG::updateRows(long start, long end) {
 	}
 }
 
-void MatrixG::randomizeRows(long start, long end, drand48_data *state) {
+void MatrixG::randomizeRows(long start, long end) {
 	unsigned char c;
-	Matrix::randomizeRows(start, end, state);
+	Matrix::randomizeRows(start, end);
 	for (long i = start; i < end; i++) {
 		for (long j = 0; j < w; j++) {
 			c = (~read[i][j]) + 1;
