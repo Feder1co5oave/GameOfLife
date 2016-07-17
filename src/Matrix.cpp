@@ -57,13 +57,24 @@ cell_t _lifeLogic[2][9] = {
 };
 
 void Matrix::updateRows(long start, long end) {
+	long alive;
 	for (long i = start; i < end; i++) {
-		write[i][0]   = lifeLogic(read[i][0],   countAlive(i, 0));
+		cell_t *a = read[i-1], *b = read[i], *c = read[i+1];
+		alive = a[w-1] + a[ 0 ] + a[ 1 ] +
+		        b[w-1]          + b[ 1 ] +
+		        c[w-1] + c[ 0 ] + c[ 1 ];
+		write[i][0] = lifeLogic(b[0], alive);
 		#pragma ivdep
 		for (long j = 1, _w = w - 1; j < _w; j++) {
-			write[i][j] = lifeLogic(read[i][j], dumbCountAlive(i, j));
+			alive = a[j-1] + a[ j ] + a[j+1] +
+			        b[j-1]          + b[j+1] +
+			        c[j-1] + c[ j ] + c[j+1];
+			write[i][j] = lifeLogic(b[j], alive);
 		}
-		write[i][w-1] = lifeLogic(read[i][w-1], countAlive(i, w-1));
+		alive = a[w-2] + a[w-1] + a[ 0 ] +
+		        b[w-2]          + b[ 0 ] +
+		        c[w-2] + c[w-1] + c[ 0 ];
+		write[i][w-1] = lifeLogic(b[w-1], alive);
 	}
 }
 
