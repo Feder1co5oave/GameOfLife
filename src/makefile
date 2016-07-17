@@ -3,7 +3,7 @@ FF_ROOT = /home/federico/SPM/fastflow
 FASTFLOW = -I$(FF_ROOT)
 CXX = g++
 CXXFLAGS = -std=c++11 -pthread -O3
-OPTS = -DEXTREME_TEST
+OPTS =
 
 .PHONY: all build clean
 
@@ -13,7 +13,7 @@ main.out: main.cpp libs/Matrix.o
 	$(CXX) $^ $(CXXFLAGS) $(OPTS) -o $@
 
 main.x.out: main.cpp libs/Matrix.o libs/MatrixG.o
-	$(CXX) $^ $(CXXFLAGS) $(OPENCV) -DGRAPHIC -o $@
+	$(CXX) $^ $(CXXFLAGS) $(OPENCV) $(OPTS) -DGRAPHIC -o $@
 
 main.ff.out: main_ff.cpp libs/Matrix.o
 	$(CXX) $^ $(CXXFLAGS) $(FASTFLOW) $(OPTS) -o $@

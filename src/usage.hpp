@@ -28,9 +28,6 @@ bool existArgument(int argc, char **argv, const std::string& option) {
 }
 
 void show_usage(char **argv) {
-	#ifdef EXTREME_TEST
-	std::cout << "Usage: " << argv[0] << " <size> <steps> <threads>" << std::endl;
-	#else
 	std::cout << "Usage: " << argv[0] << " [<params>]\nWhere <params> are:" << std::endl ;
 	std::cout << "  --thread | -t <number>  number of threads" << std::endl;
 	std::cout << "  --height | -h <number>  height of the matrix" << std::endl;
@@ -44,24 +41,10 @@ void show_usage(char **argv) {
 	std::cout << "  --heads                 draw some Hammerheads" << std::endl;
 	std::cout << "  --help   | -?           print this help" << std::endl;
 	std::cout << "If no configurations are drawn, the World will be initialized at random." << std::endl;
-	#endif
 }
 
 gol_run parse_arguments(int argc, char **argv, const long NCPUS) {
 	gol_run run = {1000, 1000, 1000, NCPUS, 0, false};
-	
-	#ifdef EXTREME_TEST
-	
-	if (argc < 4) {
-		show_usage(argv);
-		exit(EXIT_FAILURE);
-	}
-
-	if (argc > 1) run.height = run.width = std::atoi(argv[1]);
-	if (argc > 2) run.steps = std::atoi(argv[2]);
-	if (argc > 3) run.workers = std::atoi(argv[3]);
-	
-	#else
 
 	if (argc <= 1) {
 		show_usage(argv);
@@ -85,8 +68,6 @@ gol_run parse_arguments(int argc, char **argv, const long NCPUS) {
 	if (existArgument(argc, argv, "--heads"))   run.configurations |= Matrix::HAMMERHEAD;
 	if (existArgument(argc, argv, "--check")
 	 || existArgument(argc, argv, "-c"))        run.check = true;
-
-	#endif
 
 	assert(run.height > 0);
 	assert(run.width > 0);

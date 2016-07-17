@@ -22,7 +22,7 @@ foreach my $p (@THREADS) {
   
   print STDERR "$p: ";
   foreach my $i (1..$N) {
-    my $r=`\\ssh $HOST "TIMEFORMAT=%R && time ./$EXE $SIZE $STEP $p" 2>&1`;
+    my $r=`\\ssh $HOST "TIMEFORMAT=%R && time ./$EXE -w $SIZE -h $SIZE -s $STEP -t $p" 2>&1`;
     $sum=$sum + $r;
     $r =~ s/^\s+|\s+$//g;
     push @timings, $r;

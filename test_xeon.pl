@@ -21,7 +21,7 @@ foreach my $p (@THREADS) {
   
   print STDERR "$p: ";
   foreach my $i (1..$N) {
-    my $r=`\\time --format="%e" ./$EXE $SIZE $STEP $p 2>&1`;
+    my $r=`\\time --format="%e" ./$EXE -w $SIZE -h $SIZE -s $STEP -t $p 2>&1`;
     $sum=$sum + $r;
     $r =~ s/^\s+|\s+$//g;
     push @timings, $r;
