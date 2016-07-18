@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns#">
+<head>
+	<meta charset="utf-8">
+	<title>Game of Life</title>
+	<meta name="author" content="Federico Soave">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Some attempts at the Game of Life">
+	<meta property="og:description" content="Some attempts at the Game of Life">
+	<link rel="author" href="https://plus.google.com/+FedericoSoave/">
+	<link rel="stylesheet" type="text/css" href="github.min.css">
+</head>
+<body>
+<div id="wrapper" class="markdown code">
+![](https://upload.wikimedia.org/wikipedia/commons/0/07/Game_of_life_pulsar.gif)
+
+Game of Life
+============
+
+As an introductory esercise to the [SPM course](http://didawiki.di.unipi.it/doku.php/magistraleinformaticanetworking/spm/start) we had to implement a parallel version of [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) in `C++`, preferably using the new `C++11` [`std::thread` library](http://en.cppreference.com/w/cpp/thread). My friend and collegue [Luca Rinaldi](https://github.com/lucarin91) first provided a rough solution, I then stepped in and contributed to his code, aiming to reduce overhead and get some serious speedup.
+
+I finally had the chance to put my cyclic thread barrier to work!
+
+### Rules of the game
+
+The game takes place on a 2-dimensional discrete space and evolves at discrete time steps. Each cell of the world is either _dead_ or _alive_. At each step, each cell is updated by taking into account its 8 adjacent cells (or _neighbours_), considering that the space is toroidal, and so the cell at position (1,1) is neighbour to the cells (1,2), (2,1), (2,2), (1,_W_), (_H_,1) and (_H_,_W_), if _W_ and _H_ are the width and the height of the matrix, respectively.
+
+1. If the cell is _dead_, it becomes _alive_ if it has exactly 3 alive neighbours, otherwise it remains dead.
+2. If the cell is _alive_, it remains _alive_ if the has either 2 or 3 alive neighbours, otherwise it dies.
+
+### Repositories
+
+The `C++` code of the application is hosted in a Github repository: &lt;iframe src="github-btn.min.html?user=Feder1co5oave&amp;repo=GameOfLife&amp;type=fork" allowtransparency="true" frameborder="0" scrolling="0" height="20" style="vertical-align:top;"&gt;&lt;/iframe&gt;
+
+We will hopefully provide a README file soon.
+
+## Parallelization
+
+The parallelization is done by evenly partitioning the game matrix by rows. The number of partitions is equal to the desider parallelism degree. Each worker is assigned a partition of rows and, by synchronizing with all other workers via the barrier, computes a given number of iterations of the Game on its partition.
+
+Please notice that since the evaluation of a cell is done by considering all its neighbours, at each iteration the first and last rows of each partition are propagated to the workers in charge of the two adjacent partitions. This leads to cache transfers between workers.
+
+
+
+## Scalability tests
+
+Some tests were performed on a dual Intel Xeon processor worstation, and on an Intel Xeon Phi coprocessor.
+
+
+#### Xeon, 4000x4000, 1000 iterations
+The workstation has two Xeon E5-2650 CPUs, clocked at 2.00 Ghz:
+[![Hwloc](hwloc.png)](hwloc.svg)
+&lt;!-- &lt;div id="test_xeon" style="width:800px; height:400px;"&gt;&lt;/div&gt; --&gt;
+
+&lt;div id="xeon_4000-TH_timings_chart" style="width:800px; height:400px;"&gt;&lt;/div&gt;
+
+The variance on tests with few threads is most likely due to CPU frequency throttling.
+
+
+### Xeon Phi (Intel MIC)
+The Phi coprocessor has 60 cores, each providing 4 contexts, clocked at 1.00 Ghz
+
+#### 4000x4000, 1000 iterations
+Plain threads:
+&lt;div id="mic_4000-TH_timings_chart" style="width:800px; height:400px;"&gt;&lt;/div&gt;
+Fastflow's `ParallelFor`:
+&lt;div id="mic_4000-FF_timings_chart" style="width:800px; height:400px;"&gt;&lt;/div&gt;
+
+### 8000x8000, 1000 iterations, parallel randomization
+Plain threads:
+&lt;div id="mic_8000-TH_timings_chart" style="width:800px; height:400px;"&gt;&lt;/div&gt;
+FastFlow's `ParallelFor`:
+&lt;div id="mic_8000-FF_timings_chart" style="width:800px; height:400px;"&gt;&lt;/div&gt;</div>
+
+Some more detailed charts can be seen [here](performance.html).
+<script type="text/javascript" src="marked.min.js"></script>
+<script type="text/javascript" src="ajax.js"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript" src="generate_charts.js"></script>
+</body>
+<!-- process time: 36358 -->
+</html>
