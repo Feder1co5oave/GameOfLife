@@ -6,16 +6,15 @@ Federico Soave, MCSN student
 ### Shared libraries
 - `Matrix.o` main GameOfLife logic code
 - `MatrixG.o` graphical version, needs OpenCV3 to compile
-- `Barrier.o` the thread barrier
 
 ### Executables
 Running any of the below without arguments provides the user with a help message.
 - `main.out`     POSIX threads parallel implementation
 - `main.ff.out`  FastFlow parallel implementation
 - `main.seq.out` sequential implementation
-- `main.x.out`   graphical (parallel) version, needs OpenCV3.
-	This program has a different parameter format and allows to test the correctness of the algorithm by providing
-	some example patterns.
+- `main.x.out`   graphical (pthreads) version, needs OpenCV3.
+	This program allows to test the correctness of the algorithm by visualizing
+	some example well-known patterns.
 
 
 Compiling
