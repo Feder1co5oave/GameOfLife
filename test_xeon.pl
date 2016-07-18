@@ -31,6 +31,6 @@ foreach my $p (@THREADS) {
   print STDERR "\n";
   my @sorted = sort {$a <=> $b} @timings;
   my $avg = $sum/$N;
-  push @json, "[$p, $avg, " . join(", ", @sorted) . "]";
+  push @json, "\t[$p, $avg, " . join(", ", @sorted) . "]";
 }
-print "[\n" . join(",\n", @json) . "\n]\n";
+print "[\n" . join(",\n", @json) . "\n]";
