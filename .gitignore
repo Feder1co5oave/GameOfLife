@@ -28,3 +28,11 @@ build
 *.exe
 *.out
 *.app
+
+# LaTeX
+*.aux
+*.fls
+*.synctex.gz
+*.toc
+*.fdb_latexmk
+*.log
