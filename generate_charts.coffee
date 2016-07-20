@@ -62,7 +62,7 @@ generate_charts = (bm) ->
 				if div = document.getElementById "#{ss}_timings_chart"
 					chart = new google.visualization.LineChart div
 					chart.draw(table,
-						title: "#{_s} #{s}".firstUpper()
+						#title: "#{_s} #{s}".firstUpper()
 						subtitle: 'Timings'
 						intervals: style: 'bars'
 						hAxis: title: 'threads'
@@ -74,7 +74,7 @@ generate_charts = (bm) ->
 				if div = document.getElementById "#{_s}_#{t}_chart"
 					chart = new google.visualization.LineChart div
 					chart.draw(table,
-						title: "#{_s} #{t}".firstUpper()
+						#title: "#{_s} #{t}".firstUpper()
 						hAxis: title: 'threads'
 						vAxis:
 							minValue: 0
@@ -124,7 +124,7 @@ generate_charts = (bm) ->
 
 		chart = new google.visualization.ColumnChart(document.getElementById 'vectorization_speedup')
 		chart.draw(data,
-			title: 'Vectorization speedup',
+			#title: 'Vectorization speedup',
 			hAxis: title: 'Architecture, parallelism degree'
 			vAxis:
 				title: 'Cells per second (higher is better)'

@@ -108,7 +108,6 @@
           if (div = document.getElementById(ss + "_timings_chart")) {
             chart = new google.visualization.LineChart(div);
             chart.draw(table, {
-              title: (_s + " " + s).firstUpper(),
               subtitle: 'Timings',
               intervals: {
                 style: 'bars'
@@ -131,7 +130,6 @@
             if (div = document.getElementById(_s + "_" + t + "_chart")) {
               chart = new google.visualization.LineChart(div);
               results2.push(chart.draw(table, {
-                title: (_s + " " + t).firstUpper(),
                 hAxis: {
                   title: 'threads'
                 },
@@ -184,7 +182,6 @@
       }
       chart = new google.visualization.ColumnChart(document.getElementById('vectorization_speedup'));
       return chart.draw(data, {
-        title: 'Vectorization speedup',
         hAxis: {
           title: 'Architecture, parallelism degree'
         },
