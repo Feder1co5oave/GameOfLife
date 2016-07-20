@@ -4,11 +4,32 @@ Game of Life
 Federico Soave, MCSN student
 
 ### Shared libraries
+
 - `Matrix.o` main GameOfLife logic code
 - `MatrixG.o` graphical version, needs OpenCV3 to compile
 
+
 ### Executables
-Running any of the below without arguments provides the user with a help message.
+
+Running any of the below without arguments provides the user with a help message:
+	
+	Usage: ./main.out [<params>]
+	Where <params> are:
+	  --thread | -t <number>  number of threads
+	  --height | -h <number>  height of the matrix
+	  --width  | -w <number>  width of the matrix
+	  --step   | -s <number>  number of steps
+	  --check  | -c           print hashcodes
+	  --bottles               draw some Bottles
+	  --engines               draw some Schick's Engines
+	  --gliders               draw some Gliders
+	  --guns                  draw some Gosper's Guns
+	  --blobs                 draw some Blobs
+	  --heads                 draw some Hammerheads
+	  --help   | -?           print this help
+	If no patterns are drawn, the World will be initialized at random.
+
+
 - `main.out`     POSIX threads parallel implementation
 - `main.ff.out`  FastFlow parallel implementation
 - `main.seq.out` sequential implementation
@@ -35,25 +56,28 @@ For example, to compile the FastFlow version for the MIC, run:
 	cd src
 	make -f makefile.mic main.ff.out
 
+When switching from one makefile to the other, remember to `make clean` beforehand, or use the `-B` flag.
+
 
 Verification
 ---------------------------
 
-The graphical version allows to easily verify the correctness by providing some sample well-known patterns.
+The graphical version allows to easily verify the correctness by providing some example well-known patterns.
 For example, try running
 
 	./main.x.out --height 500 --width 500 --step 1000 --engines --guns
 
 to see some Schick's Engines lose battle to a batallion of Gosper's Guns.
 
+To check that all programs produce consistent results, the `--check` (`-c`) flag can be used. If enabled, the program outputs a pair of 128-bit hex-encoded hashes computed from the matrix at its first and last iteration, respectively. For any given pair _width,height_, the initial state should always be the same and, for any given pair _initial state,steps_, the final state should always be the same.
+
 
 Running
 ----------------------------
 
-Apart from the graphical version, all executable are to be run in this way:
+All executable are typically run in this way:
 
-	./main.out <size> <steps> <threads>
+	./main.out -w <width> -h <height> -s <steps> -t <threads>
 
-where `<size>` is the side length of the square matrix, `<steps>` is the number of iterations to be computed and `<threads>` is the number of workers to be run.
-No output is printed.
+No output is printed, unless the `-c` flag is present.
 The matrix is randomly initialized before starting the actual computation.
