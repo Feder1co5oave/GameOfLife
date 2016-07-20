@@ -5,7 +5,6 @@
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
-%\usepackage[light,nott,nosf]{kpfonts}
 \usepackage{palatino}
 \usepackage[scaled]{beramono}
 \usepackage{eulervm}
@@ -14,7 +13,7 @@
 \hypersetup{
 	pdfborder={0 0 0},
 	pdfauthor={Federico Soave},
-%	pdftitle={},
+	pdftitle={Game of Life - SPM project report},
 	pdfkeywords={},
 	pdfcreator={},
 	pdfproducer={},
@@ -52,7 +51,7 @@ The \emph{Game} takes place on a 2-dimensional toroidal space, where each cell c
 
 In each iteration, the state of each cell is recomputed by looking at the state of its eight neighbour cells at the previous iteration. For this reason a couple of twin matrices is used, where each matrix is read or written at each iteration in an alternative fashion. This is realized by simply swapping two pointers.
 
-Despite being dynamically allocated as a contiguous area of memory (for sake of locality), the matrices are accessed via double pointers (i.e.\ an array of pointers to the rows). I took advantage of this to emulate the toroid on the $y$ coordinate: the array of row pointers is allocated in such a way that the item at position $-1$ points to the last ($h^\textrm{\scriptsize{th}}$) row of the matrix, and the item at position $w$ points to the first row of the matrix, allowing to seamlessly jump from one side of it to the other without the need of checking the index at runtime.
+Despite being dynamically allocated as a contiguous area of memory (for sake of locality), the matrices are accessed via double pointers (i.e.\ an array of pointers to the rows). I took advantage of this to emulate the toroid on the $y$ coordinate: the array of row pointers is allocated in such a way that the item at position $-1$ points to the last ($h^\textrm{\scriptsize{th}}$) row of the matrix, and the item at position $h$ points to the first row of the matrix, allowing to seamlessly jump from one side of it to the other without the need of checking the index at runtime.
 
 \section{Parallelization}
 
@@ -84,6 +83,14 @@ However, setting the thread affinity properly did not seem to improve performanc
 
 TODO
 
+\subsection{FastFlow implementation}
+
+Given that the business logic code was already there and I had already realized the \emph{threads} parallel version, plugging in the FastFlow framework was very easy. The \code{ParallelFor} class provides exactly the functionality I need. It is sufficient to call the \code{ParallelFor::\+parallel\_for\_idx} function in the iteration loop. The framework takes care of spawning and synchronizing the threads, and assigning them the tasks.
+
+By default, synchronization in fastflow is realized via blocking system primitives. As an option left to the programmer, \code{ParallelFor} allows to enable a ``spin'' version, that synchronizes via shared atomic variables. As in the \emph{threads} version, on the MIC architecture this modality performs better that the blocking one, whereas there is no improvement on the Xeon one. If anything, in some cases it causes the execution to terminate in unusually long times when run in the high end range of worker threads.
+
+There is a difference worth noting between my \emph{threads} implementation and the \emph{fastflow} one: whereas in the former the main thread spawns the worker threads and then gets suspended until the computation completes, in the latter the main thread is in charge of scheduling the tasks on the workers at every iteration and takes up one hardware thread on its own (or triggers several context switches, degrading performance even more).
+
 \section{Optimizations}
 
 Every bit of the program has been written with speed in mind. In order to get a good sequential code speed, I paid great attention to the following aspects:
@@ -107,17 +114,29 @@ In order to speed up the process, I parallelized the initialization phase and de
 
 \subsection{Vectorization}
 
+Processor vectorization is nowadays an essential tool to improve performance on data-intensive computations. Each of the $60$ cores of the MIC processor comes with a $512$-bit wide Vector Processing Unit which is exploited by using a new set of instructions, specific to this architecture.
 
+The Xeon processor, on the other hand, supports the 256-bit wide AVX instruction set. In order to exploit this extension, the programmer needs to explicitly tell the compiler via a compilation flag, otherwise it will generate vectorized code targeting a more generic, less performing extension (e.g.\ SSE).
 
-Tests:
-- sizes 4000 and 8000, 1000 iterations
-- xeon and xeonphi architectures
-- vectorization speedup
-- performance measures
+To enable vectorization of the kernel of the computation, compiler reports were generated. It then sufficed to rearrange code around and issue some ``\code{\#pragma ivdep}'' directives on the innermost loop. The compiler did the rest of the job.
 
-Conclusions:
-- Fastflow is easy
-- userspace spinwait is better on xeonphi
-- seq/parallel performance on xeon vs. xeonphi
+For comparison, executables of the \emph{threads} version compiled with different vectorization flags were put at a performance test: no vectorization, default compiler vectorization, and AVX extension vectorization (Xeon CPU only) were enabled alternatively. \autoref{fig:vectspeedup} shows the different computation bandwidths obtained by running the different executables on square matrices of $4000$ cells on each side, $1000$ iterations, minimum ($1$) and maximum ($16$ and $240$) parallelism degrees.
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=\textwidth]{charts/vectorization-speedup.pdf}
+\caption{Vectorization speedup} \label{fig:vectspeedup}
+\end{figure}
+
+% Tests:
+% - sizes 4000 and 8000, 1000 iterations
+% - xeon and xeonphi architectures
+% - vectorization speedup
+% - performance measures
+
+% Conclusions:
+% - Fastflow is easy
+% - userspace spinwait is better on xeonphi
+% - seq/parallel performance on xeon vs. xeonphi
 
 \end{document}
