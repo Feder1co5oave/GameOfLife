@@ -11,7 +11,7 @@
   });
 
   generate_charts = function(bm) {
-    var sets;
+    var sets, sets2;
     sets = {
       mic: {
         '4000-TH': bm.mic._4000x1000.threads,
@@ -140,6 +140,7 @@
                   title: t
                 },
                 pointsVisible: true,
+                pointSize: 4,
                 explorer: {
                   actions: ['dragToZoom', 'rightClickToReset'],
                   keepInBounds: true
@@ -153,6 +154,48 @@
         })());
       }
       return results1;
+    });
+    sets2 = {
+      mic: {
+        novec: bm.mic_no_vec._4000x1000.threads,
+        "default": bm.mic._4000x1000.threads
+      },
+      xeon: {
+        novec: bm.xeon_no_vec._4000x1000.threads,
+        "default": bm.xeon_sse2._4000x1000.threads,
+        avx: bm.xeon._4000x1000.threads
+      }
+    };
+    return google.charts.setOnLoadCallback(function() {
+      var arch, cells, chart, data, last, maxp, minp, subset;
+      data = new google.visualization.DataTable();
+      data.addColumn('string', 'architecture-size-parallelism');
+      data.addColumn('number', 'No vect');
+      data.addColumn('number', 'Default');
+      data.addColumn('number', 'AVX');
+      for (arch in sets2) {
+        subset = sets2[arch];
+        arch = arch.firstUpper();
+        cells = 4000 * 4000 * 1000;
+        minp = subset.novec[0][0];
+        last = subset.novec.length - 1;
+        maxp = subset.novec[last][0];
+        data.addRows([[arch + " " + minp + "th", cells / subset.novec[0][1], cells / subset["default"][0][1], subset.avx != null ? cells / subset.avx[0][1] : 0], [arch + " " + maxp + "th", cells / subset.novec[last][1], cells / subset["default"][last][1], subset.avx != null ? cells / subset.avx[last][1] : 0]]);
+      }
+      chart = new google.visualization.ColumnChart(document.getElementById('vectorization_speedup'));
+      return chart.draw(data, {
+        title: 'Vectorization speedup',
+        hAxis: {
+          title: 'Architecture, parallelism degree'
+        },
+        vAxis: {
+          title: 'Cells per second (higher is better)',
+          format: 'scientific',
+          gridlines: {
+            count: 10
+          }
+        }
+      });
     });
   };
 
