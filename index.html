@@ -17,9 +17,7 @@
 Game of Life
 ============
 
-As an introductory esercise to the [SPM course](http://didawiki.di.unipi.it/doku.php/magistraleinformaticanetworking/spm/start) we had to implement a parallel version of [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) in `C++`, preferably using the new `C++11` [`std::thread` library](http://en.cppreference.com/w/cpp/thread). My friend and collegue [Luca Rinaldi](https://github.com/lucarin91) first provided a rough solution, I then stepped in and contributed to his code, aiming to reduce overhead and get some serious speedup.
-
-I finally had the chance to put my cyclic thread barrier to work!
+As an introductory esercise to the [SPM course](http://didawiki.di.unipi.it/doku.php/magistraleinformaticanetworking/spm/start) we had to implement a parallel version of [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) in `C++`, preferably using the new `C++11` [`std::thread` library](http://en.cppreference.com/w/cpp/thread). My friend and collegue [Luca Rinaldi](https://github.com/lucarin91) first provided a rough solution, I then stepped in and contributed to his code, aiming to reduce overhead and get some serious speedup. In the end, Game of Life became my programming project for the SPM exam.
 
 ### Rules of the game
 
@@ -32,14 +30,15 @@ The game takes place on a 2-dimensional discrete space and evolves at discrete t
 
 The `C++` code of the application is hosted in a Github repository: &lt;iframe src="github-btn.min.html?user=Feder1co5oave&amp;repo=GameOfLife&amp;type=fork" allowtransparency="true" frameborder="0" scrolling="0" height="20" style="vertical-align:top;"&gt;&lt;/iframe&gt;
 
-We will hopefully provide a README file soon.
-
 ## Parallelization
 
-The parallelization is done by evenly partitioning the game matrix by rows. The number of partitions is equal to the desider parallelism degree. Each worker is assigned a partition of rows and, by synchronizing with all other workers via the barrier, computes a given number of iterations of the Game on its partition.
+The parallelization is done by evenly partitioning the game matrix by rows. The number of partitions is equal to the desider parallelism degree, times a constant. Each worker is dynamically assigned a partition of rows and, by synchronizing with all other workers via the barrier, computes a given number of iterations of the Game on its partition.
 
 Please notice that since the evaluation of a cell is done by considering all its neighbours, at each iteration the first and last rows of each partition are propagated to the workers in charge of the two adjacent partitions. This leads to cache transfers between workers.
 
+## Full report
+
+The PDF of the report I wrote about this project can be found [here](soave-report.pdf).
 
 
 ## Scalability tests
@@ -47,8 +46,7 @@ Please notice that since the evaluation of a cell is done by considering all its
 Some tests were performed on a dual Intel Xeon processor worstation, and on an Intel Xeon Phi coprocessor.
 
 
-#### Xeon, 4000x4000, 1000 iterations
-The workstation has two Xeon E5-2650 CPUs, clocked at 2.00 Ghz:
+The workstation has an Intel Xeon E5-2650 CPU, clocked at 2.00 Ghz:
 [![Hwloc](hwloc.png)](hwloc.svg)
 &lt;!-- &lt;div id="test_xeon" style="width:800px; height:400px;"&gt;&lt;/div&gt; --&gt;
 
