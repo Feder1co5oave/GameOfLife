@@ -6,7 +6,7 @@
     return this.charAt(0).toUpperCase() + this.slice(1);
   };
 
-  google.load('visualization', '1', {
+  google.charts.load('current', {
     packages: ['corechart']
   });
 
@@ -26,7 +26,7 @@
         '8000-FF': bm.xeon._8000x1000.fastflow
       }
     };
-    return google.setOnLoadCallback(function() {
+    google.charts.setOnLoadCallback(function() {
       var _s, chart, div, every_set, every_size, i, j, k, l, max, min, p, ref, ref1, results1, s, set, ss, subsets, t, table, tables;
       results1 = [];
       for (_s in sets) {

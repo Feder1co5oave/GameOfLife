@@ -1,6 +1,6 @@
 String.prototype.firstUpper = () -> @charAt(0).toUpperCase() + @slice(1)
 
-google.load('visualization', '1', packages: ['corechart'])
+google.charts.load('current', packages: ['corechart'])
 
 generate_charts = (bm) ->
 	sets =
@@ -15,7 +15,7 @@ generate_charts = (bm) ->
 			'8000-TH': bm.xeon._8000x1000.threads
 			'8000-FF': bm.xeon._8000x1000.fastflow
 
-	google.setOnLoadCallback () ->
+	google.charts.setOnLoadCallback () ->
 		for _s,subsets of sets
 			every_set = (map) ->
 				(map set for s,set of subsets)
