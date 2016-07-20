@@ -32,7 +32,7 @@ void show_usage(char **argv) {
 	std::cout << "  --thread | -t <number>  number of threads" << std::endl;
 	std::cout << "  --height | -h <number>  height of the matrix" << std::endl;
 	std::cout << "  --width  | -w <number>  width of the matrix" << std::endl;
-	std::cout << "  --step   | -s <number>  number of step, if 0 run forever" << std::endl;
+	std::cout << "  --step   | -s <number>  number of steps" << std::endl;
 	std::cout << "  --check  | -c           print hashcodes" << std::endl;
 	std::cout << "  --bottles               draw some Bottles" << std::endl;
 	std::cout << "  --engines               draw some Schick's Engines" << std::endl;
@@ -41,7 +41,7 @@ void show_usage(char **argv) {
 	std::cout << "  --blobs                 draw some Blobs" << std::endl;
 	std::cout << "  --heads                 draw some Hammerheads" << std::endl;
 	std::cout << "  --help   | -?           print this help" << std::endl;
-	std::cout << "If no configurations are drawn, the World will be initialized at random." << std::endl;
+	std::cout << "If no patterns are drawn, the World will be initialized at random." << std::endl;
 }
 
 gol_run parse_arguments(int argc, char **argv, const long NCPUS) {
