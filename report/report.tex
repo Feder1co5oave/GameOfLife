@@ -41,7 +41,7 @@ Apart from the sequential implementation, two parallel versions of the program w
 
 All implementations share the same business logic code which mainly consists in the \code{Matrix::updateRows} function. At execution, a matrix of the desired size is allocated and randomly initialized. Then, \code{updateRows} and \code{swap} are called in a loop for a given number of iterations.
 
-Instead of the random initialization, the user can request that some well-known configurations (such as Gliders, Gosper's Guns or Shick's Engines) be drawn on the grid, and witness their evolution in time if using the graphical version. For a given height and width pair $(h,w)$, the matrix will always be randomly initialized in the same way for all implementations.
+Instead of the random initialization, the user can request that some well-known configurations (such as Gliders, Gosper's Guns or Schick's Engines) be drawn on the grid, and witness their evolution in time if using the graphical version. For a given height and width pair $(h,w)$, the matrix will always be randomly initialized in the same way for all implementations.
 
 As a means of verifying the consistency of the different implementations, I devised a simple hashing mechanism allowing the user to check that for a given dimension and number of iterations, the matrix will always end up at the same final state. The hashing is done in a single thread and as such it is a costly operation and should not be used when measuring performance.
 
@@ -75,13 +75,29 @@ The queue is simply realized with an \code{atomic} pointer to the next chunk to 
 
 \subsection{Thread affinity}
 
-As suggested during the lab lessons of the course, I tried to bind the worker threads to the hardware threads of the CPU at the start of the computation. This is called setting the thread ``affinity''. For the MIC architeture in particular, one should make sure that different threads bind to different physical cores, if possible.
+As suggested during the lab lessons of the course, I tried to bind the worker threads to the hardware threads of the CPU at the start of the computation. This is called setting the thread ``affinity''. For the MIC architecture in particular, one should make sure that different threads bind to different physical cores, if possible.
 
 However, setting the thread affinity properly did not seem to improve performance in any case. On both architectures, the operating system seemed to do a very good job at assigning the threads itself, so I did not enable this feature.
 
 \subsection{Expected speedup}
 
-TODO
+For brevity, I will only take into consideration the \emph{threads} version executed on the MIC processor. In a typical execution, the main thread allocates the main data structures and then spawns the workers. In turn, they start by initializing the matrix at random and then proceed to compute the Game of Life on a partition of it. At every iteration of the Game, they synchronize each other by using the barrier and the queue of chunks for dynamic scheduling. One could model the total time of execution as follows:
+
+\begin{equation}
+T = T_{\mathrm{seq}}(p) + \frac h p \Big[ T_{\mathrm{initRow}}(w) + s \: T_{\mathrm{computeRow}}(w) \Big] + s \: T_{\mathrm{synch}}(p)
+\end{equation}
+
+where the time of the sequential part $T_{\mathrm{seq}}$ may depend on the number of threads $p$ to spawn, the parallel part is executed on partitions of $\frac h p$ rows each, and the main loop is executed $s$ times. The time for synchronization $T_{\mathrm{synch}}$ may depend on the number of workers, too.
+
+Rearranging the expression, we get
+
+\begin{equation}
+T = T_{\mathrm{seq}}(p) + \frac{hw}{p} (T_{\mathrm{initCell}} + s \: T_{\mathrm{computeCell}}) + s \: T_{\mathrm{synch}}(p)
+\end{equation}
+
+from which it can be seen that increasing the parallelism degree $p$ can cut down the compute time, but there may also be some effects on $T_{\mathrm{seq}}$ and $T_{\mathrm{synch}}$. However, experimental measurements revealed that while $T_{\mathrm{synch}}$ does not significantly increase with $p$, both $T_{\mathrm{seq}}$ and, surprisingly, $T_{\mathrm{initCell}} / p$ increase approximately linearly for $p \geq 40$.
+
+If for the sequential part a linear dependency on $p$ is quite clear, because compute chunks must be allocated and threads must be started, the same cannot be said for $T_{\mathrm{initCell}} / p$. One possible explanation is that, since in the initialization phase the matrix is accessed for the first time, the cost to fetch it from main memory must be paid right away. This holds true especially because, even when avoiding to randomly initialize, the total execution time does not change significantly.
 
 \subsection{FastFlow implementation}
 
@@ -118,25 +134,74 @@ Processor vectorization is nowadays an essential tool to improve performance on 
 
 The Xeon processor, on the other hand, supports the 256-bit wide AVX instruction set. In order to exploit this extension, the programmer needs to explicitly tell the compiler via a compilation flag, otherwise it will generate vectorized code targeting a more generic, less performing extension (e.g.\ SSE).
 
-To enable vectorization of the kernel of the computation, compiler reports were generated. It then sufficed to rearrange code around and issue some ``\code{\#pragma ivdep}'' directives on the innermost loop. The compiler did the rest of the job.
+To check that vectorization of the kernel of the computation was successful, compiler reports were generated. It then sufficed to rearrange code around and issue a ``\code{\#pragma ivdep}'' directive on the innermost loop. The compiler did the rest of the job.
 
 For comparison, executables of the \emph{threads} version compiled with different vectorization flags were put at a performance test: no vectorization, default compiler vectorization, and AVX extension vectorization (Xeon CPU only) were enabled alternatively. \autoref{fig:vectspeedup} shows the different computation bandwidths obtained by running the different executables on square matrices of $4000$ cells on each side, $1000$ iterations, minimum ($1$) and maximum ($16$ and $240$) parallelism degrees.
 
-\begin{figure}[hbtp]
+\begin{figure}[htpb]
 \centering
 \includegraphics[width=\textwidth]{charts/vectorization-speedup.pdf}
 \caption{Vectorization speedup} \label{fig:vectspeedup}
 \end{figure}
 
-% Tests:
-% - sizes 4000 and 8000, 1000 iterations
-% - xeon and xeonphi architectures
-% - vectorization speedup
-% - performance measures
+\section{Performance}
 
-% Conclusions:
-% - Fastflow is easy
-% - userspace spinwait is better on xeonphi
-% - seq/parallel performance on xeon vs. xeonphi
+To measure performances of the program, the three implementations \emph{sequential}, \emph{threads} and \emph{fastflow} were run on the machine made available for the project, on both the main Intel Xeon processor, and the Intel Xeon Phi coprocessor (in native mode). \autoref{tab:architectures} summarizes the main features of the two CPUs.
+
+\begin{table}[htb] \centering
+\begin{tabular}{lcc}
+\firsthline
+	& Xeon E5-2650 & Xeon Phi 5100 \\\hline
+	Num. of cores/threads & $8$ / $16$ & $60$ / $240$ \\
+ 	Frequency & $2.00$ Ghz & $1.00$ Ghz \\
+ 	L2 cache & $8 \times 256$ KB & $60 \times 256$ KB \\
+ 	L3 cache & $20$ MB shared & --- \\
+ 	TDP & $95$ W & $245$ W \\
+\lasthline
+\end{tabular}
+\caption{} \label{tab:architectures}
+\end{table}
+
+As a rule of thumb, input sizes were chosen as to obtain short enough and low-variance running times. For this, all tests were performed on square matrices  of size $4000 \times 4000$ and $8000 \times 8000$, and $1000$ iterations. From the running times, scalability, speedup and efficiency were calculated. Results are presented in the following charts. Since the execution times of \emph{threads} and \emph{fastflow} for $p = 1$ are equal to those of the sequential version, the speedup chart is exactly like the scalability one and thus can be omitted.
+
+At the maximum available parallelism degree, I was able to achieve a top speedup of $105.7$ on the MIC, and $11.1$ on the Xeon, with efficiency $44.1\%$ and $72.8\%$, respectively.
+
+\section{Conclusions}
+
+The most interesting results were achieved on the MIC processor, given that on the Xeon all implementations behaved very similarly.
+
+On this highly parallel architecture, it is essential to employ userspace, busy-wait synchronization mechanisms in order to unlock its true potential. A careful exploitation of vector units is also of paramount importance, as it can be seen in \autoref{fig:vectspeedup} that it allowed to outperform the Xeon processor, in the end.
+
+After a quick look at the documentation, FastFlow's \code{ParallelFor} turned out to be extremely easy to use and allowed to achieve very good performance with minimum effort and very little code. However, on the MIC processor the \emph{threads} version outperformed it in every test, almost doubling its efficiency. On the other hand, it cost me a much bigger effort and some occasional headaches.
+
+\begin{figure}[p] \centering
+\includegraphics[width=\textwidth]{charts/xeon-4000-ff.pdf}
+\caption{Running times, Xeon, $4000\times4000$, \emph{fastflow}}
+\end{figure}
+
+\begin{figure}[pb] \centering
+\includegraphics[width=\textwidth]{charts/mic-4000-th.pdf}
+\caption{Running times, MIC, $4000\times4000$, \emph{threads}}
+\end{figure}
+
+\begin{figure}[p] \centering
+\includegraphics[width=\textwidth]{charts/mic-scalability.pdf}
+\caption{Scalability, MIC}
+\end{figure}
+
+\begin{figure}[p] \centering
+\includegraphics[width=\textwidth]{charts/mic-efficiency.pdf}
+\caption{Efficiency, MIC}
+\end{figure}
+
+\begin{figure}[p] \centering
+\includegraphics[width=\textwidth]{charts/xeon-scalability.pdf}
+\caption{Scalability, Xeon}
+\end{figure}
+
+\begin{figure}[p] \centering
+\includegraphics[width=\textwidth]{charts/xeon-efficiency.pdf}
+\caption{Efficiency, Xeon}
+\end{figure}
 
 \end{document}
